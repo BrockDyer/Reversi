@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represent the board.
+ * Represents the board.
  *
  * @author Brock Dyer.
  */
