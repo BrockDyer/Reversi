@@ -46,6 +46,16 @@ public class ReversiGame {
     }
 
     /**
+     * Register a player with the board.
+     *
+     * @param player the player to register. Player must implement ReversiObserver.
+     */
+    public void registerPlayerWithBoard(ReversiPlayer player){
+        this.board.register(player);
+        board.reset();
+    }
+
+    /**
      * Get the piece at the specified position.
      *
      * @param row the row the piece is in.
@@ -126,7 +136,7 @@ public class ReversiGame {
      * Restart the game with a new board.
      */
     public void restart() {
-        this.board = new ReversiBoard();
+        this.board.reset();
     }
 
     /**

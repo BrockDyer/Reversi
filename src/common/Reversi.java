@@ -1,5 +1,7 @@
 package common;
 
+import client.gui.ReversiGUI;
+import client.gui.events.ReversiEvent;
 import util.MoveException;
 
 /**
@@ -15,10 +17,26 @@ public class Reversi implements ReversiPlayer {
     private final ReversiGame game;
 
     /**
+     * The gui that this player is using.
+     */
+    private final ReversiGUI gui;
+
+    /**
      * Start the game locally.
      */
-    public Reversi() {
+    public Reversi(ReversiGUI gui) {
+        this.gui = gui;
         this.game = new ReversiGame();
+        this.game.registerPlayerWithBoard(this);
+    }
+
+    @Override
+    public void handle(ReversiEvent re) {
+        int row = re.getRow();
+        int col = re.getCol();
+        PieceColor color = re.getColor();
+
+        gui.updateBoard(row, col, color);
     }
 
     @Override

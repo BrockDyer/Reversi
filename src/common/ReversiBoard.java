@@ -1,21 +1,31 @@
 package common;
 
+import client.gui.events.ReversiEvent;
+import common.observer.ReversiObserver;
+import common.observer.ReversiSubscriber;
 import util.MoveException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents the board.
  *
  * @author Brock Dyer.
  */
-public class ReversiBoard {
+public class ReversiBoard implements ReversiSubscriber {
 
     /**
      * A 2D array of pieces that represents the board.
      */
     private ReversiPiece[][] board;
+
+    /**
+     * The list of objects that are observing this board.
+     */
+    private List<ReversiObserver> observers;
 
     /**
      * The color of the current player.
@@ -26,17 +36,70 @@ public class ReversiBoard {
      * Create an empty board.
      */
     public ReversiBoard() {
-        initBoard();
+        this.observers = new ArrayList<>();
     }
 
+    /**
+     * A helper method to setup the defualt board.
+     */
     private void initBoard(){
         this.board = new ReversiPiece[8][8];
         board[3][3] = new ReversiPiece(PieceColor.BLACK);
+        alertObservers(3, 3, PieceColor.BLACK, "Initial");
+
         board[3][4] = new ReversiPiece(PieceColor.WHITE);
+        alertObservers(3, 4, PieceColor.WHITE, "Initial");
+
         board[4][3] = new ReversiPiece(PieceColor.WHITE);
+        alertObservers(4, 3, PieceColor.WHITE, "Initial");
+
         board[4][4] = new ReversiPiece(PieceColor.BLACK);
+        alertObservers(4, 4, PieceColor.BLACK, "Initial");
+
         this.currentPlayer = PieceColor.BLACK;
     }
+
+    /**
+     * Can be called by the game to reset this board to default state.
+     */
+    public void reset(){
+        initBoard();
+    }
+
+    @Override
+    public void register(ReversiObserver observer) {
+        this.observers.add(observer);
+    }
+
+    @Override
+    public void deregister(ReversiObserver observer) {
+        this.observers.remove(observer);
+    }
+
+    /**
+     * Alert all observers subscribing to this board that a change has been made.
+     *
+     * @param row the row of the change.
+     * @param col the column of the change.
+     * @param color the color of the piece that changed.
+     */
+    private void alertObservers(int row, int col, PieceColor color, String debug){
+        for(ReversiObserver observer : observers){
+            observer.handle(new ReversiEvent(row, col, color, debug));
+        }
+    }
+
+    /**
+     * Alert all observers subscribing to this board that a change has been made.
+     *
+     * @param row the row of the change.
+     * @param col the column of the change.
+     * @param color the color of the piece that changed.
+     */
+    private void alertObservers(int row, int col, PieceColor color){
+        alertObservers(row, col, color, "");
+    }
+
 
     /**
      * Change the turn to the other player.
@@ -77,14 +140,19 @@ public class ReversiBoard {
 
             ReversiPiece piece = board[row][col];
 
-            List<ReversiPiece> toFlip;
+            List<Map<ReversiPiece, int[]>> toFlip;
 
             if(piece == null && (toFlip = findOpponentsToFlip(row, col)).size() > 0){
 
                 board[row][col] = new ReversiPiece(currentPlayer);
+                alertObservers(row, col, board[row][col].getColor());
 
-                for(ReversiPiece reversiPiece : toFlip){
-                    reversiPiece.toggle();
+                for(Map<ReversiPiece, int[]> map : toFlip){
+                    for(ReversiPiece key : map.keySet()){
+                        int[] coords = map.get(key);
+                        key.toggle();
+                        alertObservers(coords[0], coords[1], key.getColor());
+                    }
                 }
 
                 return;
@@ -108,17 +176,17 @@ public class ReversiBoard {
      * @param col the column the move is being made in.
      * @return an array list of pieces that should be flipped if a piece is played in the given row and col.
      */
-    private List<ReversiPiece> findOpponentsToFlip(int row, int col) {
+    private List<Map<ReversiPiece, int[]>> findOpponentsToFlip(int row, int col) {
 
-        List<ReversiPiece> toFlip = new ArrayList<>();
-        toFlip.addAll(searchDirection(row, col, Compass.N));
-        toFlip.addAll(searchDirection(row, col, Compass.NE));
-        toFlip.addAll(searchDirection(row, col, Compass.E));
-        toFlip.addAll(searchDirection(row, col, Compass.SE));
-        toFlip.addAll(searchDirection(row, col, Compass.S));
-        toFlip.addAll(searchDirection(row, col, Compass.SW));
-        toFlip.addAll(searchDirection(row, col, Compass.W));
-        toFlip.addAll(searchDirection(row, col, Compass.NW));
+        List<Map<ReversiPiece, int[]>> toFlip = new ArrayList<>();
+        Map<ReversiPiece, int[]> flippable;
+
+        for(Compass dir : Compass.values()){
+            flippable = searchDirection(row, col, dir);
+            if(flippable.keySet().size() > 0){
+                toFlip.add(flippable);
+            }
+        }
 
         return toFlip;
     }
@@ -131,9 +199,9 @@ public class ReversiBoard {
      * @param dir the compass direction to check in.
      * @return a list of pieces in that direction that should be flipped. An empty list if there are none.
      */
-    private List<ReversiPiece> searchDirection(int row, int col, Compass dir) {
+    private Map<ReversiPiece, int[]> searchDirection(int row, int col, Compass dir) {
 
-        List<ReversiPiece> toFlip = new ArrayList<>();
+        Map<ReversiPiece, int[]> toFlip = new HashMap<>();
 
         while ((row += dir.getX()) < 8 && row >= 0 && (col += dir.getY()) < 8 && col >= 0) {
 
@@ -141,7 +209,7 @@ public class ReversiBoard {
             if (dPiece != null) {
 
                 if (dPiece.getColor() != currentPlayer) {
-                    toFlip.add(dPiece);
+                    toFlip.put(dPiece, new int[]{row, col});
                 } else {
                     if (toFlip.size() != 0) {
                         return toFlip;

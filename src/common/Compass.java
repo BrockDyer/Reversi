@@ -62,4 +62,5 @@ public enum Compass {
     public int getY(){
         return this.coords[1];
     }
+
 }

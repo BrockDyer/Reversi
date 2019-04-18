@@ -2,11 +2,12 @@ package client.gui;
 
 import common.PieceColor;
 import common.Reversi;
-import common.ReversiPiece;
 import common.ReversiPlayer;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -62,13 +63,6 @@ public class ReversiGUI extends Application {
 
 
     @Override
-    public void init() throws Exception {
-
-        this.player = new Reversi();
-
-    }
-
-    @Override
     public void start(Stage stage) throws Exception {
 
         boardPane = new GridPane();
@@ -104,6 +98,9 @@ public class ReversiGUI extends Application {
 
         stage.setTitle("Reversi");
         stage.setScene(scene);
+
+        this.player = new Reversi(this);
+
         stage.show();
 
     }
@@ -124,13 +121,30 @@ public class ReversiGUI extends Application {
             try {
                 player.makeMove(row, col);
 
-                ReversiPiece piece = player.checkPieceAt(row, col);
-
-                placePiece(b, piece.getColor() == PieceColor.BLACK ? BLACK : WHITE);
-
             } catch (MoveException me){
                 System.out.println(me.getMessage());
             }
+        }
+    }
+
+    /**
+     * Update the given index on the board.
+     *
+     * @param row the row of the piece to update.
+     * @param col the column of the piece to update.
+     * @param color the color of the piece to update.
+     */
+    public void updateBoard(int row, int col, PieceColor color){
+
+        int index = row * boardSize + col;
+        Button b = (Button)boardPane.getChildren().get(index);
+        String pieceString = color == PieceColor.BLACK ? BLACK : WHITE;
+
+
+        if(Platform.isFxApplicationThread()){
+            this.updatePiece(b, pieceString);
+        } else {
+            Platform.runLater(() -> this.updatePiece(b, pieceString));
         }
     }
 
@@ -139,11 +153,20 @@ public class ReversiGUI extends Application {
      *
      * @param b the button to set the image of.
      */
-    private void placePiece(Button b, String pieceString) {
+    private void updatePiece(Button b, String pieceString) {
 
-        StackPane pieceImage = new StackPane();
+        StackPane pieceImage;
+        Node graphic = b.getGraphic();
         Image piece = new Image(this.getClass().getResourceAsStream(pieceString));
-        pieceImage.getChildren().addAll(b.getGraphic(), new ImageView(piece));
+
+        if(graphic instanceof StackPane){
+            pieceImage = (StackPane)graphic;
+            pieceImage.getChildren().remove(1);
+            pieceImage.getChildren().add(new ImageView(piece));
+        } else {
+            pieceImage = new StackPane();
+            pieceImage.getChildren().addAll(graphic, new ImageView(piece));
+        }
 
         b.setGraphic(pieceImage);
 
