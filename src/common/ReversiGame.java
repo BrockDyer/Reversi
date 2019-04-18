@@ -140,7 +140,7 @@ public class ReversiGame {
     }
 
     /**
-     * Load a saved common.Reversi game.
+     * Load a saved reversi game.
      *
      * @param filename the name of the board file.
      */

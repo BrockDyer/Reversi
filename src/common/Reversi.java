@@ -5,7 +5,7 @@ import client.gui.events.ReversiEvent;
 import util.MoveException;
 
 /**
- * Represent a local player of the common.Reversi game.
+ * Represent a local player of the reversi game.
  *
  * @author Brock Dyer.
  */

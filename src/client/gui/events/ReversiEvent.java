@@ -3,7 +3,7 @@ package client.gui.events;
 import common.PieceColor;
 
 /**
- * Define the functionality of all Reversi events.
+ * Define the functionality of all reversi events.
  *
  * @author Brock Dyer.
  */

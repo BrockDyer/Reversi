@@ -1,14 +1,14 @@
 package common.observer;
 
 /**
- * Defines the functionality of a Reversi event subscriber.
+ * Defines the functionality of a reversi event subscriber.
  *
  * @author Brock Dyer.
  */
 public interface ReversiSubscriber {
 
     /**
-     * Called with a ReversiObserver to subscribe that observer to event from this.
+     * Called with a reversi observer to subscribe that observer to event from this.
      *
      * @param observer the observer that wants to be receive updates.
      */

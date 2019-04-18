@@ -1,7 +1,7 @@
 package common;
 
 /**
- * An enum for the colors a common.Reversi piece can be.
+ * An enum for the colors a reversi piece can be.
  *
  * @author Brock Dyer.
  */

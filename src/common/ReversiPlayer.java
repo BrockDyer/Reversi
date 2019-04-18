@@ -4,7 +4,7 @@ import common.observer.ReversiObserver;
 import util.MoveException;
 
 /**
- * An interface for any type of player that wants to play common.Reversi. <br>
+ * An interface for any type of player that wants to play reversi. <br>
  * This allows a network and local version of the game to use the same game logic.
  *
  * @author Brock Dyer.

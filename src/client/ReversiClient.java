@@ -1,7 +1,7 @@
 package client;
 
 /**
- * A client in the networked common.Reversi game.
+ * A client in the networked version of the reversi game.
  *
  * @author Brock Dyer.
  */

@@ -20,9 +20,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import util.MoveException;
 
+import java.util.List;
+
 
 /**
- * A GUI for the common.Reversi game.
+ * A GUI for the reversi game.
  *
  * @author Brock Dyer.
  */
@@ -61,9 +63,11 @@ public class ReversiGUI extends Application {
      */
     private GridPane boardPane;
 
-
     @Override
-    public void start(Stage stage) throws Exception {
+    public void init() throws Exception {
+
+        // get the command line args
+        List<String> args = getParameters().getRaw();
 
         boardPane = new GridPane();
 
@@ -85,9 +89,24 @@ public class ReversiGUI extends Application {
 
         }
 
-
         this.blackScore = new Label("Player 1: 2");
         this.whiteScore = new Label("Player 2: 2");
+
+        String gameType = args.get(0);
+
+        if(gameType.equals("client")) {
+            // Setup client here.
+
+        } else if(gameType.equals("ai")){
+            // Setup ai here.
+
+        } else {
+            this.player = new Reversi(this);
+        }
+    }
+
+    @Override
+    public void start(Stage stage) throws Exception {
 
         VBox vBox = new VBox();
         vBox.getChildren().addAll(blackScore, whiteScore);
@@ -99,8 +118,6 @@ public class ReversiGUI extends Application {
         stage.setTitle("Reversi");
         stage.setScene(scene);
 
-        this.player = new Reversi(this);
-
         stage.show();
 
     }
@@ -111,17 +128,17 @@ public class ReversiGUI extends Application {
      *
      * @param e the ActionEvent that was fired.
      */
-    private void handleMove(ActionEvent e){
-        if(e.getSource() instanceof Button){
+    private void handleMove(ActionEvent e) {
+        if (e.getSource() instanceof Button) {
 
-            Button b = (Button)e.getSource();
+            Button b = (Button) e.getSource();
             int row = Integer.parseInt(b.getId().substring(0, 1));
             int col = Integer.parseInt(b.getId().substring(1, 2));
 
             try {
                 player.makeMove(row, col);
 
-            } catch (MoveException me){
+            } catch (MoveException me) {
                 System.out.println(me.getMessage());
             }
         }
@@ -130,18 +147,18 @@ public class ReversiGUI extends Application {
     /**
      * Update the given index on the board.
      *
-     * @param row the row of the piece to update.
-     * @param col the column of the piece to update.
+     * @param row   the row of the piece to update.
+     * @param col   the column of the piece to update.
      * @param color the color of the piece to update.
      */
-    public void updateBoard(int row, int col, PieceColor color){
+    public void updateBoard(int row, int col, PieceColor color) {
 
         int index = row * boardSize + col;
-        Button b = (Button)boardPane.getChildren().get(index);
+        Button b = (Button) boardPane.getChildren().get(index);
         String pieceString = color == PieceColor.BLACK ? BLACK : WHITE;
 
 
-        if(Platform.isFxApplicationThread()){
+        if (Platform.isFxApplicationThread()) {
             this.updatePiece(b, pieceString);
         } else {
             Platform.runLater(() -> this.updatePiece(b, pieceString));
@@ -159,8 +176,8 @@ public class ReversiGUI extends Application {
         Node graphic = b.getGraphic();
         Image piece = new Image(this.getClass().getResourceAsStream(pieceString));
 
-        if(graphic instanceof StackPane){
-            pieceImage = (StackPane)graphic;
+        if (graphic instanceof StackPane) {
+            pieceImage = (StackPane) graphic;
             pieceImage.getChildren().remove(1);
             pieceImage.getChildren().add(new ImageView(piece));
         } else {
@@ -170,6 +187,20 @@ public class ReversiGUI extends Application {
 
         b.setGraphic(pieceImage);
 
+    }
+
+    /**
+     * The main method expects the host and port.
+     *
+     * @param args command line arguments
+     */
+    public static void main(String[] args) {
+        if (args.length != 1) {
+            System.out.println("Usage: java ReversiGUI <local, client, ai>");
+            System.exit(-1);
+        } else {
+            Application.launch(args);
+        }
     }
 
 
