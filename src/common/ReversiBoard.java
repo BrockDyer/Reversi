@@ -55,6 +55,17 @@ public class ReversiBoard {
     }
 
     /**
+     * Get the piece at the specified position.
+     *
+     * @param row the row of the piece.
+     * @param col the column of the piece.
+     * @return the piece at the requested position, null if there is no piece there.
+     */
+    public ReversiPiece getPiece(int row, int col){
+        return board[row][col];
+    }
+
+    /**
      * Make a move on the board.
      *
      * @param row the row to make the move in.

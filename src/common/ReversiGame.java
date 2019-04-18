@@ -19,7 +19,7 @@ public class ReversiGame {
     /**
      * The total number of spaces available for play.
      */
-    private final int numSquares;
+    private final int numSquares = 64;
     /**
      * The number of pieces each player has played on the board.
      */
@@ -30,7 +30,9 @@ public class ReversiGame {
      */
     private int passCount;
 
-    /** A boolean flag for checking if the game is over. This will be used more in the network implementation. */
+    /**
+     * A boolean flag for checking if the game is over. This will be used more in the network implementation.
+     */
     private boolean gameOver;
 
     /**
@@ -38,10 +40,20 @@ public class ReversiGame {
      */
     public ReversiGame() {
         this.board = new ReversiBoard();
-        this.numSquares = 64;
         this.black = 2;
         this.white = 2;
         this.gameOver = false;
+    }
+
+    /**
+     * Get the piece at the specified position.
+     *
+     * @param row the row the piece is in.
+     * @param col the column the piece is in.
+     * @return the piece at that position, null if there is no piece there.
+     */
+    public ReversiPiece getPieceAt(int row, int col){
+        return board.getPiece(row, col);
     }
 
     /**
@@ -82,33 +94,30 @@ public class ReversiGame {
      * @param row the row to make the move in.
      * @param col the column to make the move in.
      */
-    public void makeMove(int row, int col) {
-        try {
-            board.move(row, col);
+    public void makeMove(int row, int col) throws MoveException {
+        board.move(row, col);
 
-            passCount = 0;
+        passCount = 0;
 
-            PieceColor cp = board.getCurrentPlayer();
+        PieceColor cp = board.getCurrentPlayer();
 
-            black += cp == PieceColor.BLACK ? 1 : 0;
-            white += cp == PieceColor.WHITE ? 1 : 0;
+        black += cp == PieceColor.BLACK ? 1 : 0;
+        white += cp == PieceColor.WHITE ? 1 : 0;
 
-            if(isGameOver()){
-                gameOver = true;
-                // Do any game ending stuff here.
-            }
-
-            board.changeTurn();
-
-        } catch (MoveException me) {
-            System.out.println(me.getMessage());
+        if (isGameOver()) {
+            gameOver = true;
+            // Do any game ending stuff here.
         }
+
+        board.changeTurn();
+
+
     }
 
     /**
      * Pass the current player's turn to the other player.
      */
-    public void pass(){
+    public void pass() {
         passCount++;
         board.changeTurn();
     }
@@ -116,7 +125,7 @@ public class ReversiGame {
     /**
      * Restart the game with a new board.
      */
-    public void restart(){
+    public void restart() {
         this.board = new ReversiBoard();
     }
 
@@ -125,7 +134,7 @@ public class ReversiGame {
      *
      * @param filename the name of the board file.
      */
-    public void loadGame(String filename){
+    public void loadGame(String filename) {
 
     }
 
@@ -134,14 +143,14 @@ public class ReversiGame {
      *
      * @param filename the name of the file to save the game to.
      */
-    public void saveGame(String filename){
+    public void saveGame(String filename) {
 
     }
 
     /**
      * Set the gameOver flag to true.
      */
-    public void quit(){
+    public void quit() {
         this.gameOver = true;
     }
 }

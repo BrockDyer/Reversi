@@ -1,5 +1,7 @@
 package common;
 
+import util.MoveException;
+
 /**
  * An interface for any type of player that wants to play common.Reversi. <br>
  * This allows a network and local version of the game to use the same game logic.
@@ -20,8 +22,19 @@ public interface ReversiPlayer {
      *
      * @param row the row to make the move in.
      * @param col the column to make a move in.
+     *
+     * @throws MoveException thrown if the move requested was invalid.
      */
-    void makeMove(int row, int col);
+    void makeMove(int row, int col) throws MoveException;
+
+    /**
+     * Check what piece is at the specified position.
+     *
+     * @param row the row.
+     * @param col the column.
+     * @return the piece at the position, null if it is empty.
+     */
+    ReversiPiece checkPieceAt(int row, int col);
 
     /**
      * Pass this player's turn to the opponent.

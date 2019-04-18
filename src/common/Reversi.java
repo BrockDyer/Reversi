@@ -1,5 +1,7 @@
 package common;
 
+import util.MoveException;
+
 /**
  * Represent a local player of the common.Reversi game.
  *
@@ -15,7 +17,7 @@ public class Reversi implements ReversiPlayer {
     /**
      * Start the game locally.
      */
-    public Reversi(){
+    public Reversi() {
         this.game = new ReversiGame();
     }
 
@@ -28,7 +30,12 @@ public class Reversi implements ReversiPlayer {
     }
 
     @Override
-    public void makeMove(int row, int col) {
+    public ReversiPiece checkPieceAt(int row, int col) {
+        return game.getPieceAt(row, col);
+    }
+
+    @Override
+    public void makeMove(int row, int col) throws MoveException {
         game.makeMove(row, col);
     }
 
@@ -58,12 +65,4 @@ public class Reversi implements ReversiPlayer {
         game.quit();
     }
 
-    /**
-     * Start the local game.
-     *
-     * @param args cmd-line arguments. Not used.
-     */
-    public static void main(String[] args) {
-
-    }
 }
