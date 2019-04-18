@@ -1,7 +1,7 @@
 package common;
 
 /**
- * A piece on the Reversi
+ * A piece on the common.Reversi
  *
  * @author Brock Dyer.
  */

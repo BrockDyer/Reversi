@@ -25,6 +25,11 @@ public class ReversiGame {
      */
     private int black, white;
 
+    /**
+     * Two passes in a row means that the game is over.
+     */
+    private int passCount;
+
     /** A boolean flag for checking if the game is over. This will be used more in the network implementation. */
     private boolean gameOver;
 
@@ -68,7 +73,7 @@ public class ReversiGame {
      * @return true if the game is over.
      */
     private boolean isGameOver() {
-        return gameOver || black + white == numSquares;
+        return gameOver || black + white == numSquares || passCount >= 2;
     }
 
     /**
@@ -80,6 +85,8 @@ public class ReversiGame {
     public void makeMove(int row, int col) {
         try {
             board.move(row, col);
+
+            passCount = 0;
 
             PieceColor cp = board.getCurrentPlayer();
 
@@ -99,6 +106,14 @@ public class ReversiGame {
     }
 
     /**
+     * Pass the current player's turn to the other player.
+     */
+    public void pass(){
+        passCount++;
+        board.changeTurn();
+    }
+
+    /**
      * Restart the game with a new board.
      */
     public void restart(){
@@ -106,7 +121,7 @@ public class ReversiGame {
     }
 
     /**
-     * Load a saved Reversi game.
+     * Load a saved common.Reversi game.
      *
      * @param filename the name of the board file.
      */
@@ -121,5 +136,12 @@ public class ReversiGame {
      */
     public void saveGame(String filename){
 
+    }
+
+    /**
+     * Set the gameOver flag to true.
+     */
+    public void quit(){
+        this.gameOver = true;
     }
 }
