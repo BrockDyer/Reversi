@@ -41,7 +41,7 @@ public class ReversiBoard {
     /**
      * Change the turn to the other player.
      */
-    private void changeTurn() {
+    public void changeTurn() {
         this.currentPlayer = currentPlayer == PieceColor.BLACK ? PieceColor.WHITE : PieceColor.BLACK;
     }
 
@@ -76,7 +76,6 @@ public class ReversiBoard {
                     reversiPiece.toggle();
                 }
 
-                changeTurn();
                 return;
 
             }
