@@ -26,7 +26,15 @@ public class ReversiBoard {
      * Create an empty board.
      */
     public ReversiBoard() {
+        initBoard();
+    }
+
+    private void initBoard(){
         this.board = new ReversiPiece[8][8];
+        board[3][3] = new ReversiPiece(PieceColor.BLACK);
+        board[3][4] = new ReversiPiece(PieceColor.WHITE);
+        board[4][3] = new ReversiPiece(PieceColor.WHITE);
+        board[4][4] = new ReversiPiece(PieceColor.BLACK);
         this.currentPlayer = PieceColor.BLACK;
     }
 
@@ -140,6 +148,29 @@ public class ReversiBoard {
         }
 
         return toFlip;
+    }
+
+    @Override
+    public String toString() {
+
+        StringBuilder sb = new StringBuilder();
+        for(ReversiPiece[] row : board){
+
+            for(ReversiPiece piece : row){
+                sb.append("|");
+                if(piece == null){
+                    sb.append(" ");
+                } else {
+                    sb.append(piece.toString());
+                }
+            }
+
+            sb.append("|");
+            sb.append("\n");
+
+        }
+
+        return sb.toString();
     }
 
 }

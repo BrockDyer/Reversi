@@ -36,4 +36,9 @@ public class ReversiPiece {
     public PieceColor getColor() {
         return color;
     }
+
+    @Override
+    public String toString() {
+        return color == PieceColor.BLACK ? "B" : "W";
+    }
 }
