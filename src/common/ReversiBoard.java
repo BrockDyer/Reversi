@@ -1,6 +1,9 @@
 package common;
 
+import util.MoveException;
+
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represent the board.
@@ -48,11 +51,35 @@ public class ReversiBoard {
      *
      * @param row the row to make the move in.
      * @param col the column to move in.
-     * @return true if the move was successful.
      */
-    public boolean move(int row, int col) {
+    public void move(int row, int col) throws MoveException {
 
-        return false;
+        if(row >= 0 && row < 8 && col >= 0 && col < 8){
+
+            ReversiPiece piece = board[row][col];
+
+            List<ReversiPiece> toFlip;
+
+            if(piece == null && (toFlip = findOpponentsToFlip(row, col)).size() > 0){
+
+                board[row][col] = new ReversiPiece(currentPlayer);
+
+                for(ReversiPiece reversiPiece : toFlip){
+                    reversiPiece.toggle();
+                }
+
+                changeTurn();
+                return;
+
+            }
+
+            throw new MoveException("Invalid move." + (piece != null ? " That space is occupied already." :
+                    " That move will not flip any opponent pieces."));
+
+        }
+
+        throw new MoveException("Invalid move. Index of move was outside allowed range.");
+
     }
 
 
@@ -63,12 +90,56 @@ public class ReversiBoard {
      * @param col the column the move is being made in.
      * @return an array list of pieces that should be flipped if a piece is played in the given row and col.
      */
-    private ArrayList<ReversiPiece> findOpponentsToFlip(int row, int col) {
+    private List<ReversiPiece> findOpponentsToFlip(int row, int col) {
 
-        ArrayList<ReversiPiece> toFlip = new ArrayList<>();
+        List<ReversiPiece> toFlip = new ArrayList<>();
+        toFlip.addAll(searchDirection(row, col, Compass.N));
+        toFlip.addAll(searchDirection(row, col, Compass.NE));
+        toFlip.addAll(searchDirection(row, col, Compass.E));
+        toFlip.addAll(searchDirection(row, col, Compass.SE));
+        toFlip.addAll(searchDirection(row, col, Compass.S));
+        toFlip.addAll(searchDirection(row, col, Compass.SW));
+        toFlip.addAll(searchDirection(row, col, Compass.W));
+        toFlip.addAll(searchDirection(row, col, Compass.NW));
 
         return toFlip;
     }
 
+    /**
+     * Find all the pieces that can be flipped in one direction from the starting move.
+     *
+     * @param row the row of the move.
+     * @param col the column of the move.
+     * @param dir the compass direction to check in.
+     * @return a list of pieces in that direction that should be flipped. An empty list if there are none.
+     */
+    private List<ReversiPiece> searchDirection(int row, int col, Compass dir) {
+
+        List<ReversiPiece> toFlip = new ArrayList<>();
+
+        while ((row += dir.getX()) < 8 && row >= 0 && (col += dir.getY()) < 8 && col >= 0) {
+
+            ReversiPiece dPiece = board[row][col];
+            if (dPiece != null) {
+
+                if (dPiece.getColor() != currentPlayer) {
+                    toFlip.add(dPiece);
+                } else {
+                    if (toFlip.size() != 0) {
+                        return toFlip;
+                    }
+
+                }
+            } else {
+
+                toFlip.clear();
+                return toFlip;
+
+            }
+
+        }
+
+        return toFlip;
+    }
 
 }

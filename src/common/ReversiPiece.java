@@ -28,4 +28,12 @@ public class ReversiPiece {
         this.color = color == PieceColor.BLACK ? PieceColor.WHITE : PieceColor.BLACK;
     }
 
+    /**
+     * Get the color of this piece.
+     *
+     * @return the color of this piece.
+     */
+    public PieceColor getColor() {
+        return color;
+    }
 }
