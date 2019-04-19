@@ -9,7 +9,7 @@ public interface ReversiProtocol {
     /**
      * Server to client.<br>
      * Sends a welcome message to the two clients. <br>
-     * Usage: WELCOME (boolean) true if it is the receiving player's turn.
+     * Usage: WELCOME (String) "true" if it is the receiving player's turn, "false" otherwise.
      */
     String WELCOME = "WELCOME";
     /**
@@ -27,7 +27,7 @@ public interface ReversiProtocol {
     /**
      * Server to client.<br>
      * Tells a client that a move was made.<br>
-     * Usage: MOVE_MADE #row #col
+     * Usage: MOVE_MADE #row #col PieceColor
      */
     String MOVE_MADE = "MOVE_MADE";
     /**

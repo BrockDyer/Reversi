@@ -41,19 +41,6 @@ public class Reversi implements ReversiPlayer, ReversiObserver {
     }
 
     @Override
-    public boolean isMyTurn() {
-        /* This can always return true because this is the local version of the game. Both players are using the same
-        GUI. Therefore this should always return true and let the board handle which color is supposed to be playing.
-        */
-        return true;
-    }
-
-    @Override
-    public ReversiPiece checkPieceAt(int row, int col) {
-        return game.getPieceAt(row, col);
-    }
-
-    @Override
     public void makeMove(int row, int col) throws MoveException {
         game.makeMove(row, col);
     }

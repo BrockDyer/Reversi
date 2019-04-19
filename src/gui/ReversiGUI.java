@@ -17,8 +17,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import network.client.ReversiClient;
 import util.MoveException;
 
+import java.net.Socket;
 import java.util.List;
 
 
@@ -93,10 +95,17 @@ public class ReversiGUI extends Application {
 
         String gameType = args.get(0);
 
-        if(gameType.equals("network/client")) {
-            // Setup client here.
+        if (gameType.equals("client")) {
+            if (args.size() != 3) {
+                System.out.println("Usage: java ReversiGUI \"client\" hostname #port");
+                System.exit(-1);
+            }
+            int port = Integer.parseInt(args.get(2));
+            Socket socket = new Socket(args.get(1), port);
 
-        } else if(gameType.equals("ai")){
+            this.player = new ReversiClient(socket, this);
+
+        } else if (gameType.equals("ai")) {
             // Setup ai here.
 
         } else {
@@ -121,6 +130,21 @@ public class ReversiGUI extends Application {
 
     }
 
+    /**
+     * The main method expects the host and port.
+     *
+     * @param args command line arguments
+     */
+    public static void main(String[] args) {
+        if (args.length < 1 || args.length > 3) {
+            System.out.println("Usage: java ReversiGUI local");
+            System.out.println("Usage: java ReversiGUI \"client\" hostname #port");
+            System.out.println("Usage: java ReversiGUI ai");
+            System.exit(-1);
+        } else {
+            Application.launch(args);
+        }
+    }
 
     /**
      * Handle a button press from the board.
@@ -187,20 +211,5 @@ public class ReversiGUI extends Application {
         b.setGraphic(pieceImage);
 
     }
-
-    /**
-     * The main method expects the host and port.
-     *
-     * @param args command line arguments
-     */
-    public static void main(String[] args) {
-        if (args.length != 1) {
-            System.out.println("Usage: java ReversiGUI <local, client, ai>");
-            System.exit(-1);
-        } else {
-            Application.launch(args);
-        }
-    }
-
 
 }

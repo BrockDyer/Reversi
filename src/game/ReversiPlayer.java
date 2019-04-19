@@ -12,13 +12,6 @@ import util.MoveException;
 public interface ReversiPlayer {
 
     /**
-     * Check if it is this player's turn.
-     *
-     * @return true if it is this player's turn.
-     */
-    boolean isMyTurn();
-
-    /**
      * Make a move.
      *
      * @param row the row to make the move in.
@@ -27,15 +20,6 @@ public interface ReversiPlayer {
      * @throws MoveException thrown if the move requested was invalid.
      */
     void makeMove(int row, int col) throws MoveException;
-
-    /**
-     * Check what piece is at the specified position.
-     *
-     * @param row the row.
-     * @param col the column.
-     * @return the piece at the position, null if it is empty.
-     */
-    ReversiPiece checkPieceAt(int row, int col);
 
     /**
      * Pass this player's turn to the opponent.
