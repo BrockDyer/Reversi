@@ -105,6 +105,9 @@ public class ReversiGUI extends Application {
 
             this.player = new ReversiClient(socket, this);
 
+            Thread t = new Thread((ReversiClient)this.player);
+            t.start();
+
         } else if (gameType.equals("ai")) {
             // Setup ai here.
 

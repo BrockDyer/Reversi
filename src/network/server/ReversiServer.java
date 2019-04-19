@@ -1,5 +1,6 @@
 package network.server;
 
+import game.PieceColor;
 import game.ReversiGame;
 import network.Duplexer;
 import network.ReversiProtocol;
@@ -27,6 +28,11 @@ public class ReversiServer implements Runnable{
     private Duplexer currentPlayer, otherPlayer;
 
     /**
+     * The color of the current player.
+     */
+    private PieceColor currentColor;
+
+    /**
      * A boolean flag to determine when the server thread should stop looping.
      */
     private boolean sentinel;
@@ -41,6 +47,8 @@ public class ReversiServer implements Runnable{
         this.currentPlayer = client1;
         this.otherPlayer = client2;
         this.game = new ReversiGame();
+        this.game.restart();
+        this.currentColor = PieceColor.BLACK;
         this.sentinel = true;
     }
 
@@ -50,6 +58,7 @@ public class ReversiServer implements Runnable{
         while(sentinel){
 
             currentPlayer.sendMessage(ReversiProtocol.MAKE_MOVE);
+            System.out.println("Sent welcome message.");
 
             String response = currentPlayer.receiveMessage();
             String[] tokens = response.split(" ");
@@ -63,6 +72,12 @@ public class ReversiServer implements Runnable{
                         int row = Integer.parseInt(tokens[1]);
                         int col = Integer.parseInt(tokens[2]);
                         game.makeMove(row, col);
+
+                        currentPlayer.sendMessage(ReversiProtocol.MOVE_MADE + " " + row + " " + col +
+                            " " + currentColor);
+
+                        otherPlayer.sendMessage(ReversiProtocol.MOVE_MADE + " " + row + " " + col +
+                                " " + currentColor);
 
                         // Do game end condition checking.
 
@@ -148,6 +163,13 @@ public class ReversiServer implements Runnable{
             }
 
         }
+
+        try {
+            currentPlayer.close();
+            otherPlayer.close();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -157,6 +179,7 @@ public class ReversiServer implements Runnable{
         Duplexer temp = currentPlayer;
         currentPlayer = otherPlayer;
         otherPlayer = temp;
+        currentColor = currentColor == PieceColor.BLACK ? PieceColor.WHITE : PieceColor.BLACK;
     }
 
     /**
@@ -174,6 +197,8 @@ public class ReversiServer implements Runnable{
         } else {
 
             int port = Integer.parseInt(args[0]);
+            System.out.println("Starting server on port " + port);
+
             try {
                 ServerSocket serverSocket = new ServerSocket(port);
 
@@ -183,12 +208,15 @@ public class ReversiServer implements Runnable{
                 while(accept) {
 
                     Duplexer client1 = new Duplexer(serverSocket.accept());
-                    client1.sendMessage(ReversiProtocol.WELCOME);
+                    System.out.println("Client 1 connected...");
+                    client1.sendMessage(ReversiProtocol.WELCOME + " true");
 
                     Duplexer client2 = new Duplexer(serverSocket.accept());
-                    client2.sendMessage(ReversiProtocol.WELCOME);
+                    System.out.println("Client 2 connected...");
+                    client2.sendMessage(ReversiProtocol.WELCOME + " false");
 
                     ReversiServer server = new ReversiServer(client1, client2);
+                    System.out.println("Starting game...");
                     Thread t = new Thread(server);
                     t.start();
 

@@ -51,36 +51,44 @@ public class ReversiClient implements ReversiPlayer, Runnable {
     public ReversiClient(Socket socket, ReversiGUI gui) throws IOException {
         this.coms = new Duplexer(socket);
         this.gui = gui;
-        this.sentinel = false;
+        this.sentinel = true;
+        System.out.println("Constructed client");
     }
 
     @Override
     public void makeMove(int row, int col) throws MoveException {
-        if(isMyTurn) {
-            coms.sendMessage(ReversiProtocol.MOVE + " " + row + " " + col);
-        }
+
+        coms.sendMessage(ReversiProtocol.MOVE + " " + row + " " + col);
+
     }
 
     @Override
     public void pass() {
-        if(isMyTurn) {
+        if (isMyTurn) {
             coms.sendMessage(ReversiProtocol.PASS);
         }
+
     }
 
     @Override
     public void restart() {
+
         coms.sendMessage(ReversiProtocol.RESTART);
+
     }
 
     @Override
     public void save(String filename) {
+
         coms.sendMessage(ReversiProtocol.SAVE + " " + filename);
+
     }
 
     @Override
     public void load(String filename) {
+
         coms.sendMessage(ReversiProtocol.LOAD + " " + filename);
+
     }
 
     @Override
@@ -93,19 +101,22 @@ public class ReversiClient implements ReversiPlayer, Runnable {
 
         while (sentinel) {
 
+
             String fromServer = coms.receiveMessage();
             String[] tokens = fromServer.split(" ");
+
+            System.out.println(fromServer);
 
             switch (tokens[0]) {
 
                 case ReversiProtocol.WELCOME:
-                    System.out.println("Connected to server!");
-                    if(tokens.length == 2){
+                    if (tokens.length == 2) {
+
                         String turn = tokens[1];
-                        if(turn.equals("true")){
+                        if (turn.equals("true")) {
                             this.isMyTurn = true;
                             this.myColor = PieceColor.BLACK;
-                        } else if(turn.equals("false")){
+                        } else if (turn.equals("false")) {
                             this.isMyTurn = false;
                             this.myColor = PieceColor.WHITE;
                         } else {
@@ -113,6 +124,12 @@ public class ReversiClient implements ReversiPlayer, Runnable {
                             sentinel = false;
                             break;
                         }
+
+                        setup();
+
+                    } else {
+                        System.err.println("Server sent bad request! Closing connection...");
+                        sentinel = false;
                     }
                     break;
 
@@ -122,15 +139,15 @@ public class ReversiClient implements ReversiPlayer, Runnable {
 
                 case ReversiProtocol.MOVE_MADE:
 
-                    if(tokens.length == 4){
+                    if (tokens.length == 4) {
 
                         int row = Integer.parseInt(tokens[1]);
                         int col = Integer.parseInt(tokens[2]);
                         String pieceColor = tokens[3];
                         PieceColor color;
-                        if(pieceColor.equals("BLACK")){
+                        if (pieceColor.equals("BLACK")) {
                             color = PieceColor.BLACK;
-                        } else if(pieceColor.equals("WHITE")){
+                        } else if (pieceColor.equals("WHITE")) {
                             color = PieceColor.WHITE;
                         } else {
                             System.err.println("Server sent invalid color! Closing connection...");
@@ -140,7 +157,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
 
                         gui.updateBoard(row, col, color);
 
-                        if(color == myColor){
+                        if (color == myColor) {
                             isMyTurn = false;
                         }
 
@@ -199,5 +216,21 @@ public class ReversiClient implements ReversiPlayer, Runnable {
             }
 
         }
+
+        try {
+            coms.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Setup the board with the default configuration.
+     */
+    private void setup() {
+        gui.updateBoard(3, 3, PieceColor.BLACK);
+        gui.updateBoard(3, 4, PieceColor.WHITE);
+        gui.updateBoard(4, 3, PieceColor.WHITE);
+        gui.updateBoard(4, 4, PieceColor.BLACK);
     }
 }
