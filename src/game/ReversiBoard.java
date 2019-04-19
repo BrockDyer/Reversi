@@ -212,6 +212,7 @@ public class ReversiBoard implements ReversiSubscriber {
                 if (dPiece.getColor() != currentPlayer) {
                     toFlip.put(dPiece, new int[]{row, col});
                 } else {
+
                     if (toFlip.size() != 0) {
                         return toFlip;
                     }

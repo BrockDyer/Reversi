@@ -105,7 +105,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
             String fromServer = coms.receiveMessage();
             String[] tokens = fromServer.split(" ");
 
-            System.out.println(fromServer);
+            //System.out.println(fromServer);
 
             switch (tokens[0]) {
 
@@ -125,8 +125,6 @@ public class ReversiClient implements ReversiPlayer, Runnable {
                             break;
                         }
 
-                        setup();
-
                     } else {
                         System.err.println("Server sent bad request! Closing connection...");
                         sentinel = false;
@@ -137,7 +135,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
                     this.isMyTurn = true;
                     break;
 
-                case ReversiProtocol.MOVE_MADE:
+                case ReversiProtocol.PIECE_UPDATE:
 
                     if (tokens.length == 4) {
 
@@ -222,15 +220,5 @@ public class ReversiClient implements ReversiPlayer, Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * Setup the board with the default configuration.
-     */
-    private void setup() {
-        gui.updateBoard(3, 3, PieceColor.BLACK);
-        gui.updateBoard(3, 4, PieceColor.WHITE);
-        gui.updateBoard(4, 3, PieceColor.WHITE);
-        gui.updateBoard(4, 4, PieceColor.BLACK);
     }
 }

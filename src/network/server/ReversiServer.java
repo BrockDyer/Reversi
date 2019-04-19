@@ -2,6 +2,8 @@ package network.server;
 
 import game.PieceColor;
 import game.ReversiGame;
+import game.observer.ReversiObserver;
+import gui.events.ReversiEvent;
 import network.Duplexer;
 import network.ReversiProtocol;
 import util.MoveException;
@@ -15,7 +17,7 @@ import java.util.Scanner;
  *
  * @author Brock Dyer.
  */
-public class ReversiServer implements Runnable{
+public class ReversiServer implements ReversiObserver, Runnable{
 
     /**
      * The instance of the game logic.
@@ -47,9 +49,21 @@ public class ReversiServer implements Runnable{
         this.currentPlayer = client1;
         this.otherPlayer = client2;
         this.game = new ReversiGame();
-        this.game.restart();
+
+        this.game.registerPlayerWithBoard(this);
+
         this.currentColor = PieceColor.BLACK;
         this.sentinel = true;
+    }
+
+    @Override
+    public void handle(ReversiEvent re) {
+        int row = re.getRow();
+        int col = re.getCol();
+        PieceColor color = re.getColor();
+
+        currentPlayer.sendMessage(ReversiProtocol.PIECE_UPDATE + " " + row + " " + col + " " + color);
+        otherPlayer.sendMessage(ReversiProtocol.PIECE_UPDATE + " " + row + " " + col + " " + color);
     }
 
     @Override
@@ -72,12 +86,6 @@ public class ReversiServer implements Runnable{
                         int row = Integer.parseInt(tokens[1]);
                         int col = Integer.parseInt(tokens[2]);
                         game.makeMove(row, col);
-
-                        currentPlayer.sendMessage(ReversiProtocol.MOVE_MADE + " " + row + " " + col +
-                            " " + currentColor);
-
-                        otherPlayer.sendMessage(ReversiProtocol.MOVE_MADE + " " + row + " " + col +
-                                " " + currentColor);
 
                         // Do game end condition checking.
 

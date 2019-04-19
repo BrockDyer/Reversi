@@ -27,9 +27,9 @@ public interface ReversiProtocol {
     /**
      * Server to client.<br>
      * Tells a client that a move was made.<br>
-     * Usage: MOVE_MADE #row #col PieceColor
+     * Usage: PIECE_UPDATE #row #col PieceColor
      */
-    String MOVE_MADE = "MOVE_MADE";
+    String PIECE_UPDATE = "PIECE_UPDATE";
     /**
      * Client to server.<br>
      * Pass the current turn to the other player.<br>
