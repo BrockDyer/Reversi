@@ -2,6 +2,8 @@ package network.server;
 
 import game.ReversiGame;
 import network.Duplexer;
+import network.ReversiProtocol;
+import util.MoveException;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -14,16 +16,32 @@ import java.util.Scanner;
  */
 public class ReversiServer implements Runnable{
 
+    /**
+     * The instance of the game logic.
+     */
     private final ReversiGame game;
 
+    /**
+     * Duplexers to communicate with the two clients.
+     */
     private Duplexer currentPlayer, otherPlayer;
 
+    /**
+     * A boolean flag to determine when the server thread should stop looping.
+     */
     private boolean sentinel;
 
+    /**
+     * Create the server.
+     *
+     * @param client1 the first client.
+     * @param client2 the second client.
+     */
     public ReversiServer(Duplexer client1, Duplexer client2) {
         this.currentPlayer = client1;
         this.otherPlayer = client2;
         this.game = new ReversiGame();
+        this.sentinel = true;
     }
 
     @Override
@@ -31,7 +49,103 @@ public class ReversiServer implements Runnable{
 
         while(sentinel){
 
+            currentPlayer.sendMessage(ReversiProtocol.MAKE_MOVE);
 
+            String response = currentPlayer.receiveMessage();
+            String[] tokens = response.split(" ");
+            String[] responseTokens;
+
+            switch (tokens[0]){
+
+                case ReversiProtocol.MOVE:
+
+                    try {
+                        int row = Integer.parseInt(tokens[1]);
+                        int col = Integer.parseInt(tokens[2]);
+                        game.makeMove(row, col);
+
+                        // Do game end condition checking.
+
+                        changeTurn();
+
+                    } catch (MoveException me){
+                        System.out.println(me.getMessage());
+                        break;
+                    } catch (NumberFormatException nfe){
+                        System.out.println("Bad response from client! Closing connections...");
+                        sentinel = false;
+                    }
+
+                    break;
+
+                case ReversiProtocol.PASS:
+                    game.pass();
+                    break;
+
+                case ReversiProtocol.SAVE:
+                    otherPlayer.sendMessage(ReversiProtocol.SAVE);
+
+                    responseTokens = otherPlayer.receiveMessage().split(" ");
+                    if(responseTokens.length == 3){
+                        if(responseTokens[2].equals("true")){
+                            // Save the game.
+                        }
+                    } else {
+                        System.err.println("Bad response from client! Closing connections...");
+                        sentinel = false;
+                    }
+
+                    break;
+
+                case ReversiProtocol.LOAD:
+                    otherPlayer.sendMessage(ReversiProtocol.LOAD);
+
+                    responseTokens = otherPlayer.receiveMessage().split(" ");
+                    if(responseTokens.length == 3){
+                        if(responseTokens[2].equals("true")){
+                            // Load the game.
+                        }
+                    } else {
+                        System.err.println("Bad response from client! Closing connections...");
+                        sentinel = false;
+                    }
+                    break;
+
+                case ReversiProtocol.QUIT:
+                    otherPlayer.sendMessage(ReversiProtocol.QUIT);
+
+                    responseTokens = otherPlayer.receiveMessage().split(" ");
+                    if(responseTokens.length == 2){
+                        if(responseTokens[1].equals("true")){
+                            game.quit();
+                            sentinel = false;
+                        }
+                    } else {
+                        System.err.println("Bad response from client! Closing connections...");
+                        sentinel = false;
+                    }
+                    break;
+
+                case ReversiProtocol.RESTART:
+                    otherPlayer.sendMessage(ReversiProtocol.RESTART);
+
+                    responseTokens = otherPlayer.receiveMessage().split(" ");
+                    if(responseTokens.length == 2){
+                        if(responseTokens[1].equals("true")){
+                            game.restart();
+                            sentinel = false;
+                        }
+                    } else {
+                        System.err.println("Bad response from client! Closing connections...");
+                        sentinel = false;
+                    }
+                    break;
+
+                default:
+                    System.err.println("Unknown request from client! Closing connections...");
+                    sentinel = false;
+                    break;
+            }
 
         }
     }
@@ -69,7 +183,10 @@ public class ReversiServer implements Runnable{
                 while(accept) {
 
                     Duplexer client1 = new Duplexer(serverSocket.accept());
+                    client1.sendMessage(ReversiProtocol.WELCOME);
+
                     Duplexer client2 = new Duplexer(serverSocket.accept());
+                    client2.sendMessage(ReversiProtocol.WELCOME);
 
                     ReversiServer server = new ReversiServer(client1, client2);
                     Thread t = new Thread(server);
@@ -86,6 +203,8 @@ public class ReversiServer implements Runnable{
                     accept = in.strip().equals("y");
 
                 }
+
+                serverSocket.close();
 
             } catch (IOException ioe){
                 ioe.printStackTrace();

@@ -1,5 +1,6 @@
 package game;
 
+import game.observer.ReversiObserver;
 import util.MoveException;
 
 /**
@@ -50,7 +51,7 @@ public class ReversiGame {
      *
      * @param player the player to register. Player must implement ReversiObserver.
      */
-    public void registerPlayerWithBoard(ReversiPlayer player){
+    public void registerPlayerWithBoard(ReversiObserver player){
         this.board.register(player);
         board.reset();
     }

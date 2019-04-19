@@ -159,12 +159,13 @@ public class ReversiBoard implements ReversiSubscriber {
 
             }
 
-            throw new MoveException("Invalid move." + (piece != null ? " That space is occupied already." :
-                    " That move will not flip any opponent pieces."));
+            throw new MoveException("Invalid move by " + currentPlayer +
+                    (piece != null ? ". That space is occupied already." :
+                            ". That move will not flip any opponent pieces."));
 
         }
 
-        throw new MoveException("Invalid move. Index of move was outside allowed range.");
+        throw new MoveException("Invalid move by " + currentPlayer + ". Index of move was outside allowed range.");
 
     }
 
