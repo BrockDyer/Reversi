@@ -1,8 +1,8 @@
-package common;
+package game;
 
-import client.gui.events.ReversiEvent;
-import common.observer.ReversiObserver;
-import common.observer.ReversiSubscriber;
+import gui.events.ReversiEvent;
+import game.observer.ReversiObserver;
+import game.observer.ReversiSubscriber;
 import util.MoveException;
 
 import java.util.ArrayList;

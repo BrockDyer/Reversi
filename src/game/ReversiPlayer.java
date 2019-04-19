@@ -1,6 +1,6 @@
-package common;
+package game;
 
-import common.observer.ReversiObserver;
+import game.observer.ReversiObserver;
 import util.MoveException;
 
 /**
@@ -9,7 +9,7 @@ import util.MoveException;
  *
  * @author Brock Dyer.
  */
-public interface ReversiPlayer extends ReversiObserver {
+public interface ReversiPlayer {
 
     /**
      * Check if it is this player's turn.

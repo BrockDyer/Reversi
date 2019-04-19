@@ -1,6 +1,6 @@
-package client.gui.events;
+package gui.events;
 
-import common.PieceColor;
+import game.PieceColor;
 
 /**
  * Define the functionality of all reversi events.

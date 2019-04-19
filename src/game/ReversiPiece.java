@@ -1,4 +1,4 @@
-package common;
+package game;
 
 /**
  * A piece on the reversi

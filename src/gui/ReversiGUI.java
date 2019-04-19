@@ -1,8 +1,8 @@
-package client.gui;
+package gui;
 
-import common.PieceColor;
-import common.Reversi;
-import common.ReversiPlayer;
+import game.PieceColor;
+import game.Reversi;
+import game.ReversiPlayer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -16,7 +16,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import util.MoveException;
 
@@ -94,7 +93,7 @@ public class ReversiGUI extends Application {
 
         String gameType = args.get(0);
 
-        if(gameType.equals("client")) {
+        if(gameType.equals("network/client")) {
             // Setup client here.
 
         } else if(gameType.equals("ai")){
@@ -108,11 +107,11 @@ public class ReversiGUI extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        VBox vBox = new VBox();
-        vBox.getChildren().addAll(blackScore, whiteScore);
+//        VBox vBox = new VBox();
+//        vBox.getChildren().addAll(blackScore, whiteScore);
 
         HBox hBox = new HBox();
-        hBox.getChildren().addAll(boardPane, vBox);
+        hBox.getChildren().addAll(boardPane);
         Scene scene = new Scene(hBox);
 
         stage.setTitle("Reversi");

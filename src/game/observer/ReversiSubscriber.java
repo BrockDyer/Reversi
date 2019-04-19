@@ -1,4 +1,4 @@
-package common.observer;
+package game.observer;
 
 /**
  * Defines the functionality of a reversi event subscriber.

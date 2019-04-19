@@ -1,4 +1,4 @@
-package common;
+package game;
 
 /**
  * Represent the 8 compass directions.

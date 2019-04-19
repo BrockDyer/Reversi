@@ -1,6 +1,6 @@
-package common.observer;
+package game.observer;
 
-import client.gui.events.ReversiEvent;
+import gui.events.ReversiEvent;
 
 /**
  * An interface defining the methods any observer of the reversi game should have.

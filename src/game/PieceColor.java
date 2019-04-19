@@ -1,4 +1,4 @@
-package common;
+package game;
 
 /**
  * An enum for the colors a reversi piece can be.

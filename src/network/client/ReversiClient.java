@@ -1,4 +1,4 @@
-package client;
+package network.client;
 
 /**
  * A client in the networked version of the reversi game.

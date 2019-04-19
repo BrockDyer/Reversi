@@ -1,7 +1,8 @@
-package common;
+package game;
 
-import client.gui.ReversiGUI;
-import client.gui.events.ReversiEvent;
+import game.observer.ReversiObserver;
+import gui.ReversiGUI;
+import gui.events.ReversiEvent;
 import util.MoveException;
 
 /**
@@ -9,7 +10,7 @@ import util.MoveException;
  *
  * @author Brock Dyer.
  */
-public class Reversi implements ReversiPlayer {
+public class Reversi implements ReversiPlayer, ReversiObserver {
 
     /**
      * The game logic.
