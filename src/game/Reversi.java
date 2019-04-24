@@ -44,6 +44,8 @@ public class Reversi implements ReversiPlayer, ReversiObserver {
     public void makeMove(int row, int col) throws MoveException {
         game.makeMove(row, col);
         gui.updateScore(game.getBlackScore(), game.getWhiteScore());
+        gui.updateTurn(game.getPieceAt(row, col).getColor() == PieceColor.BLACK ?
+                PieceColor.WHITE.toString() : PieceColor.BLACK.toString());
     }
 
     @Override

@@ -60,6 +60,12 @@ public class ReversiGUI extends Application {
      * Labels for the scores of the players.
      */
     private Label blackScore, whiteScore;
+
+    /**
+     * Label for whose turn.
+     */
+    private Label turn;
+
     /**
      * The control to display the board to the user.
      */
@@ -107,6 +113,10 @@ public class ReversiGUI extends Application {
         whiteScore.setFont(scoreFont);
         whiteScore.setTextFill(Color.IVORY);
 
+        this.turn = new Label("Black's Turn");
+        turn.setFont(scoreFont);
+        turn.setTextFill(Color.IVORY);
+
         String gameType = args.get(0);
 
         if (gameType.equals("client")) {
@@ -137,10 +147,13 @@ public class ReversiGUI extends Application {
         ImageView blackIcon = new ImageView(new Image(this.getClass().getResourceAsStream(BLACK)));
         ImageView whiteIcon = new ImageView(new Image(this.getClass().getResourceAsStream(WHITE)));
 
-        Region r = new Region();
-        HBox.setHgrow(r, Priority.ALWAYS);
+        Region left = new Region();
+        HBox.setHgrow(left, Priority.ALWAYS);
+        Region right = new Region();
+        HBox.setHgrow(right, Priority.ALWAYS);
 
-        hBox.getChildren().addAll(blackIcon, blackScore, r, whiteIcon, whiteScore);
+
+        hBox.getChildren().addAll(blackIcon, blackScore, left, turn, right, whiteIcon, whiteScore);
         hBox.setAlignment(Pos.CENTER);
         hBox.setBackground(new Background(new BackgroundFill(Color.SADDLEBROWN, CornerRadii.EMPTY, Insets.EMPTY)));
 
@@ -247,6 +260,15 @@ public class ReversiGUI extends Application {
     public void updateScore(int black, int white){
         this.blackScore.setText("x " + black);
         this.whiteScore.setText("x " + white);
+    }
+
+    /**
+     * Update the turn label.
+     *
+     * @param player the name of the player whose turn it is.
+     */
+    public void updateTurn(String player){
+        this.turn.setText(player.substring(0, 1) + player.substring(1).toLowerCase() + "'s" + " Turn");
     }
 
 }

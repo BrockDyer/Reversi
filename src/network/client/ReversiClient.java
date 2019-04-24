@@ -59,6 +59,8 @@ public class ReversiClient implements ReversiPlayer, Runnable {
     @Override
     public void makeMove(int row, int col) throws MoveException {
 
+        Platform.runLater(() -> gui.updateTurn(myColor == PieceColor.WHITE ? PieceColor.BLACK.toString() :
+                PieceColor.WHITE.toString()));
         coms.sendMessage(ReversiProtocol.MOVE + " " + row + " " + col);
 
     }
@@ -126,6 +128,8 @@ public class ReversiClient implements ReversiPlayer, Runnable {
                             break;
                         }
 
+                        System.out.println(myColor.toString());
+
                     } else {
                         System.err.println("Server sent bad request! Closing connection...");
                         sentinel = false;
@@ -134,7 +138,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
 
                 case ReversiProtocol.MAKE_MOVE:
                     this.isMyTurn = true;
-
+                    Platform.runLater(() -> gui.updateTurn(myColor.toString()));
                     break;
 
                 case ReversiProtocol.MOVE_MADE:
