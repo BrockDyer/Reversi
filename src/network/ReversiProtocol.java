@@ -26,6 +26,12 @@ public interface ReversiProtocol {
     String MOVE = "MOVE";
     /**
      * Server to client.<br>
+     *     Sends a move update to both clients.
+     *     Usage: MOVE_MADE #black #white
+     */
+    String MOVE_MADE = "MOVE_MADE";
+    /**
+     * Server to client.<br>
      * Tells a client that a move was made.<br>
      * Usage: PIECE_UPDATE #row #col PieceColor
      */

@@ -3,6 +3,7 @@ package network.client;
 import game.PieceColor;
 import game.ReversiPlayer;
 import gui.ReversiGUI;
+import javafx.application.Platform;
 import network.Duplexer;
 import network.ReversiProtocol;
 import util.MoveException;
@@ -133,6 +134,22 @@ public class ReversiClient implements ReversiPlayer, Runnable {
 
                 case ReversiProtocol.MAKE_MOVE:
                     this.isMyTurn = true;
+
+                    break;
+
+                case ReversiProtocol.MOVE_MADE:
+
+                    if(tokens.length != 3){
+                        System.err.println("Server sent bad request! Closing connection...");
+                        sentinel = false;
+                        break;
+                    }
+
+                    int black = Integer.parseInt(tokens[1]);
+                    int white = Integer.parseInt(tokens[2]);
+
+                    Platform.runLater(() -> gui.updateScore(black, white));
+
                     break;
 
                 case ReversiProtocol.PIECE_UPDATE:

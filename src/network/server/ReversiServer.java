@@ -71,7 +71,8 @@ public class ReversiServer implements ReversiObserver, Runnable{
 
         while(sentinel){
 
-            currentPlayer.sendMessage(ReversiProtocol.MAKE_MOVE);
+            currentPlayer.sendMessage(ReversiProtocol.MAKE_MOVE + " " + game.getBlackScore() + " " +
+                    game.getWhiteScore());
             System.out.println("Sent welcome message.");
 
             String response = currentPlayer.receiveMessage();
@@ -86,6 +87,11 @@ public class ReversiServer implements ReversiObserver, Runnable{
                         int row = Integer.parseInt(tokens[1]);
                         int col = Integer.parseInt(tokens[2]);
                         game.makeMove(row, col);
+
+                        currentPlayer.sendMessage(ReversiProtocol.MOVE_MADE + " " + game.getBlackScore() +
+                                " " + game.getWhiteScore());
+                        otherPlayer.sendMessage(ReversiProtocol.MOVE_MADE + " " + game.getBlackScore() +
+                                " " + game.getWhiteScore());
 
                         // Do game end condition checking.
 
