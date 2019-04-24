@@ -1,8 +1,8 @@
 package game;
 
-import gui.events.ReversiEvent;
 import game.observer.ReversiObserver;
 import game.observer.ReversiSubscriber;
+import gui.events.ReversiEvent;
 import util.MoveException;
 
 import java.util.ArrayList;
@@ -33,6 +33,11 @@ public class ReversiBoard implements ReversiSubscriber {
     private PieceColor currentPlayer;
 
     /**
+     * The number of white and black pieces on the board respectively.
+     */
+    private int numWhite, numBlack;
+
+    /**
      * Create an empty board.
      */
     public ReversiBoard() {
@@ -57,6 +62,8 @@ public class ReversiBoard implements ReversiSubscriber {
         alertObservers(4, 4, PieceColor.BLACK, "Initial");
 
         this.currentPlayer = PieceColor.BLACK;
+        this.numBlack = 2;
+        this.numWhite = 2;
     }
 
     /**
@@ -145,11 +152,20 @@ public class ReversiBoard implements ReversiSubscriber {
             if(piece == null && (toFlip = findOpponentsToFlip(row, col)).size() > 0){
 
                 board[row][col] = new ReversiPiece(currentPlayer);
+                numWhite += currentPlayer == PieceColor.WHITE ? 1 : 0;
+                numBlack += currentPlayer == PieceColor.BLACK ? 1 : 0;
                 alertObservers(row, col, board[row][col].getColor());
 
                 for(Map<ReversiPiece, int[]> map : toFlip){
                     for(ReversiPiece key : map.keySet()){
                         int[] coords = map.get(key);
+                        if(currentPlayer == PieceColor.WHITE){
+                            numBlack--;
+                            numWhite++;
+                        } else {
+                            numBlack++;
+                            numWhite--;
+                        }
                         key.toggle();
                         alertObservers(coords[0], coords[1], key.getColor());
                     }
@@ -253,4 +269,21 @@ public class ReversiBoard implements ReversiSubscriber {
         return sb.toString();
     }
 
+    /**
+     * Get the number of white pieces.
+     *
+     * @return the number of white pieces.
+     */
+    public int getNumWhite() {
+        return numWhite;
+    }
+
+    /**
+     * Get the number of black pieces.
+     *
+     * @return the number of black pieces.
+     */
+    public int getNumBlack() {
+        return numBlack;
+    }
 }

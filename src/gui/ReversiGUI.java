@@ -7,15 +7,16 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import network.client.ReversiClient;
 import util.MoveException;
@@ -64,11 +65,18 @@ public class ReversiGUI extends Application {
      */
     private GridPane boardPane;
 
+    /**
+     * The font to use to display the score.
+     */
+    private Font scoreFont;
+
     @Override
     public void init() throws Exception {
 
         // get the command line args
         List<String> args = getParameters().getRaw();
+
+        scoreFont = new Font("Helvetica-Bold", 20);
 
         boardPane = new GridPane();
 
@@ -82,6 +90,7 @@ public class ReversiGUI extends Application {
 
                 Image image = new Image(this.getClass().getResourceAsStream(EMPTY));
                 b.setGraphic(new ImageView(image));
+                b.setFocusTraversable(false);
 
                 b.setOnAction(this::handleMove);
 
@@ -90,8 +99,13 @@ public class ReversiGUI extends Application {
 
         }
 
-        this.blackScore = new Label("Player 1: 2");
-        this.whiteScore = new Label("Player 2: 2");
+        this.blackScore = new Label("x 02");
+        blackScore.setFont(scoreFont);
+        blackScore.setTextFill(Color.IVORY);
+
+        this.whiteScore = new Label("x 02");
+        whiteScore.setFont(scoreFont);
+        whiteScore.setTextFill(Color.IVORY);
 
         String gameType = args.get(0);
 
@@ -119,12 +133,21 @@ public class ReversiGUI extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-//        VBox vBox = new VBox();
-//        vBox.getChildren().addAll(blackScore, whiteScore);
-
         HBox hBox = new HBox();
-        hBox.getChildren().addAll(boardPane);
-        Scene scene = new Scene(hBox);
+        ImageView blackIcon = new ImageView(new Image(this.getClass().getResourceAsStream(BLACK)));
+        ImageView whiteIcon = new ImageView(new Image(this.getClass().getResourceAsStream(WHITE)));
+
+        Region r = new Region();
+        HBox.setHgrow(r, Priority.ALWAYS);
+
+        hBox.getChildren().addAll(blackIcon, blackScore, r, whiteIcon, whiteScore);
+        hBox.setAlignment(Pos.CENTER);
+        hBox.setBackground(new Background(new BackgroundFill(Color.SADDLEBROWN, CornerRadii.EMPTY, Insets.EMPTY)));
+
+
+        VBox vBox = new VBox();
+        vBox.getChildren().addAll(hBox, boardPane);
+        Scene scene = new Scene(vBox);
 
         stage.setTitle("Reversi");
         stage.setScene(scene);
@@ -213,6 +236,17 @@ public class ReversiGUI extends Application {
 
         b.setGraphic(pieceImage);
 
+    }
+
+    /**
+     * Update the scores for each player.
+     *
+     * @param black the score for black.
+     * @param white the score for white.
+     */
+    public void updateScore(int black, int white){
+        this.blackScore.setText("x " + black);
+        this.whiteScore.setText("x " + white);
     }
 
 }

@@ -43,6 +43,7 @@ public class Reversi implements ReversiPlayer, ReversiObserver {
     @Override
     public void makeMove(int row, int col) throws MoveException {
         game.makeMove(row, col);
+        gui.updateScore(game.getBlackScore(), game.getWhiteScore());
     }
 
     @Override

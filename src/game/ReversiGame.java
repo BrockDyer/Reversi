@@ -21,10 +21,6 @@ public class ReversiGame {
      * The total number of spaces available for play.
      */
     private final int numSquares = 64;
-    /**
-     * The number of pieces each player has played on the board.
-     */
-    private int black, white;
 
     /**
      * Two passes in a row means that the game is over.
@@ -41,8 +37,6 @@ public class ReversiGame {
      */
     public ReversiGame() {
         this.board = new ReversiBoard();
-        this.black = 2;
-        this.white = 2;
         this.gameOver = false;
     }
 
@@ -76,13 +70,10 @@ public class ReversiGame {
      */
     private String getWinner() {
 
-        if (black > white) {
-            return "Black";
-        } else if (black < white) {
-            return "White";
-        } else {
-            return "Draw";
-        }
+        int nb = board.getNumBlack();
+        int nw = board.getNumWhite();
+
+        return nb == nw ? "Draw" : (nb > nw ? "BLACK" : "WHITE");
 
     }
 
@@ -96,7 +87,25 @@ public class ReversiGame {
      * @return true if the game is over.
      */
     private boolean isGameOver() {
-        return gameOver || black + white == numSquares || passCount >= 2;
+        return gameOver || board.getNumBlack() + board.getNumWhite() == numSquares;
+    }
+
+    /**
+     * Get the score for black.
+     *
+     * @return black's score.
+     */
+    public int getBlackScore(){
+        return board.getNumBlack();
+    }
+
+    /**
+     * Get the score for white.
+     *
+     * @return white's score.
+     */
+    public int getWhiteScore(){
+        return board.getNumWhite();
     }
 
     /**
@@ -112,8 +121,6 @@ public class ReversiGame {
 
         PieceColor cp = board.getCurrentPlayer();
 
-        black += cp == PieceColor.BLACK ? 1 : 0;
-        white += cp == PieceColor.WHITE ? 1 : 0;
 
         if (isGameOver()) {
             gameOver = true;
