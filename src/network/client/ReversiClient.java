@@ -8,6 +8,7 @@ import network.Duplexer;
 import network.ReversiProtocol;
 import util.MoveException;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Set;
@@ -75,7 +76,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
     }
 
     @Override
-    public Set<int[]> getMoves() {
+    public Set<Point> getMoves() {
 
         return null;
     }

@@ -8,6 +8,7 @@ import network.Duplexer;
 import network.ReversiProtocol;
 import util.MoveException;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.Scanner;
@@ -114,7 +115,7 @@ public class ReversiServer implements ReversiObserver, Runnable {
                         sentinel = false;
                     }
 
-                    Set<int[]> moveSet = game.getPossibleMoves();
+                    Set<Point> moveSet = game.getPossibleMoves();
 
                 case ReversiProtocol.PASS:
                     game.pass();

@@ -3,6 +3,7 @@ package game;
 import game.observer.ReversiObserver;
 import util.MoveException;
 
+import java.awt.*;
 import java.util.Set;
 
 /**
@@ -160,7 +161,7 @@ public class ReversiGame {
      * @return a list of integer arrays containing the row and column of every possible move for the current player.
      * Empty list if no moves are possible.
      */
-    public Set<int[]> getPossibleMoves() {
+    public Set<Point> getPossibleMoves() {
         return board.getPossibleMoves();
     }
 

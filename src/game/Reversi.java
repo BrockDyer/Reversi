@@ -5,6 +5,7 @@ import gui.ReversiGUI;
 import gui.events.ReversiEvent;
 import util.MoveException;
 
+import java.awt.*;
 import java.util.Set;
 
 /**
@@ -56,7 +57,7 @@ public class Reversi implements ReversiPlayer, ReversiObserver {
     }
 
     @Override
-    public Set<int[]> getMoves() {
+    public Set<Point> getMoves() {
         return game.getPossibleMoves();
     }
 

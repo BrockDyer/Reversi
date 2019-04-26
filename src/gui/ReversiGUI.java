@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import network.client.ReversiClient;
 import util.MoveException;
 
+import java.awt.*;
 import java.net.Socket;
 import java.util.HashSet;
 import java.util.List;
@@ -84,12 +85,7 @@ public class ReversiGUI extends Application {
     /**
      * The previous set of possible moves.
      */
-    private Set<int[]> lastMoveSet;
-
-    /**
-     * The last row and column that a move were made in.
-     */
-    private int lastRow, lastCol;
+    private Set<Point> lastMoveSet;
 
     /**
      * The font to use to display the score.
@@ -107,8 +103,6 @@ public class ReversiGUI extends Application {
         boardPane = new GridPane();
 
         this.lastMoveSet = new HashSet<>();
-        lastRow = -1;
-        lastCol = -1;
 
         for (int i = 0; i < BOARD_SIZE; i++) {
 
@@ -223,8 +217,7 @@ public class ReversiGUI extends Application {
             int row = Integer.parseInt(b.getId().substring(0, 1));
             int col = Integer.parseInt(b.getId().substring(1, 2));
 
-            lastRow = row;
-            lastCol = col;
+            lastMoveSet.remove(new Point(row, col));
 
             try {
                 player.makeMove(row, col);
@@ -301,28 +294,29 @@ public class ReversiGUI extends Application {
     public void updateTurn(String player) {
         this.turn.setText(player.substring(0, 1) + player.substring(1).toLowerCase() + "'s" + " Turn");
 
-        // Remove the old overlays.
-        for (int[] loc : lastMoveSet) {
-            int row = loc[0], col = loc[1];
-            if(row == lastRow && col == lastCol){
+        Set<Point> moveSet = this.player.getMoves();
+
+        for (Point loc : moveSet) {
+
+            if(lastMoveSet.contains(loc)){
+                lastMoveSet.remove(loc);
                 continue;
             }
-            Button b = (Button) boardPane.getChildren().get(row * BOARD_SIZE + col);
-            updateImage(b, BLANK_OVERLAY);
-        }
 
-        Set<int[]> moveSet = this.player.getMoves();
-        for (int[] loc : moveSet) {
-
-            int row = loc[0], col = loc[1];
+            int row = loc.x, col = loc.y;
 
             Button b = (Button) boardPane.getChildren().get(row * BOARD_SIZE + col);
-            System.out.println("Button id=" + b.getId() + " row=" + row + " col=" + col);
 
             updateImage(b, MOVE_OVERLAY);
         }
 
-        System.out.println();
+        // Remove the old overlays.
+        for (Point loc : lastMoveSet) {
+            int row = loc.x, col = loc.y;
+            Button b = (Button) boardPane.getChildren().get(row * BOARD_SIZE + col);
+            updateImage(b, BLANK_OVERLAY);
+        }
+
         this.lastMoveSet = moveSet;
     }
 

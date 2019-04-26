@@ -5,7 +5,9 @@ import game.observer.ReversiSubscriber;
 import gui.events.ReversiEvent;
 import util.MoveException;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * Represents the board.
@@ -257,8 +259,8 @@ public class ReversiBoard implements ReversiSubscriber {
      * @return a set of integer arrays containing the row and col of a possible move. Empty set if no moves are
      * possible for the current player.
      */
-    public Set<int[]> getPossibleMoves() {
-        Set<int[]> possibleMoves = new HashSet<>();
+    public Set<Point> getPossibleMoves() {
+        Set<Point> possibleMoves = new HashSet<>();
 
         for (int r = 0; r < board.length; r++) {
 
@@ -284,9 +286,9 @@ public class ReversiBoard implements ReversiSubscriber {
      * @return a set of the locations of all possible moves for the current player from the piece at the specified
      * location.
      */
-    private Set<int[]> findMovesFromPiece(int row, int col) {
+    private Set<Point> findMovesFromPiece(int row, int col) {
 
-        Set<int[]> possibleMoves = new HashSet<>();
+        Set<Point> possibleMoves = new HashSet<>();
 
         // Return if the piece here is not the current player's color.
         if (board[row][col].getColor() != currentPlayer) {
@@ -294,7 +296,7 @@ public class ReversiBoard implements ReversiSubscriber {
         }
 
         for (Compass dir : Compass.values()) {
-            int[] moveLoc = searchMoveDir(row, col, dir);
+            Point moveLoc = searchMoveDir(row, col, dir);
             if (moveLoc != null) {
                 possibleMoves.add(moveLoc);
             }
@@ -311,9 +313,9 @@ public class ReversiBoard implements ReversiSubscriber {
      * @param row the row to start at.
      * @param col the column to start at.
      * @param dir the direction to search in.
-     * @return an integer array containing the row and col of the possible move.
+     * @return an point containing the row and col of the possible move.
      */
-    private int[] searchMoveDir(int row, int col, Compass dir) {
+    private Point searchMoveDir(int row, int col, Compass dir) {
 
         int couldFlip = 0;
 
@@ -323,7 +325,7 @@ public class ReversiBoard implements ReversiSubscriber {
 
             if (dPiece == null) {
                 if (couldFlip != 0) {
-                    return new int[]{row, col};
+                    return new Point(row, col);
                 } else {
                     return null;
                 }

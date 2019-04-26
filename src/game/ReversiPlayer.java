@@ -2,6 +2,7 @@ package game;
 
 import util.MoveException;
 
+import java.awt.*;
 import java.util.Set;
 
 /**
@@ -26,7 +27,7 @@ public interface ReversiPlayer {
      *
      * @return the list of all possible move locations for this player.
      */
-    Set<int[]> getMoves();
+    Set<Point> getMoves();
 
     /**
      * Pass this player's turn to the opponent.
