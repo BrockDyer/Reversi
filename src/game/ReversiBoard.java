@@ -5,10 +5,7 @@ import game.observer.ReversiSubscriber;
 import gui.events.ReversiEvent;
 import util.MoveException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Represents the board.
@@ -47,7 +44,7 @@ public class ReversiBoard implements ReversiSubscriber {
     /**
      * A helper method to setup the defualt board.
      */
-    private void initBoard(){
+    private void initBoard() {
         this.board = new ReversiPiece[8][8];
         board[3][3] = new ReversiPiece(PieceColor.BLACK);
         alertObservers(3, 3, PieceColor.BLACK, "Initial");
@@ -69,7 +66,7 @@ public class ReversiBoard implements ReversiSubscriber {
     /**
      * Can be called by the game to reset this board to default state.
      */
-    public void reset(){
+    public void reset() {
         initBoard();
     }
 
@@ -86,12 +83,12 @@ public class ReversiBoard implements ReversiSubscriber {
     /**
      * Alert all observers subscribing to this board that a change has been made.
      *
-     * @param row the row of the change.
-     * @param col the column of the change.
+     * @param row   the row of the change.
+     * @param col   the column of the change.
      * @param color the color of the piece that changed.
      */
-    private void alertObservers(int row, int col, PieceColor color, String debug){
-        for(ReversiObserver observer : observers){
+    private void alertObservers(int row, int col, PieceColor color, String debug) {
+        for (ReversiObserver observer : observers) {
             observer.handle(new ReversiEvent(row, col, color, debug));
         }
     }
@@ -99,11 +96,11 @@ public class ReversiBoard implements ReversiSubscriber {
     /**
      * Alert all observers subscribing to this board that a change has been made.
      *
-     * @param row the row of the change.
-     * @param col the column of the change.
+     * @param row   the row of the change.
+     * @param col   the column of the change.
      * @param color the color of the piece that changed.
      */
-    private void alertObservers(int row, int col, PieceColor color){
+    private void alertObservers(int row, int col, PieceColor color) {
         alertObservers(row, col, color, "");
     }
 
@@ -131,7 +128,7 @@ public class ReversiBoard implements ReversiSubscriber {
      * @param col the column of the piece.
      * @return the piece at the requested position, null if there is no piece there.
      */
-    public ReversiPiece getPiece(int row, int col){
+    public ReversiPiece getPiece(int row, int col) {
         return board[row][col];
     }
 
@@ -143,23 +140,27 @@ public class ReversiBoard implements ReversiSubscriber {
      */
     public void move(int row, int col) throws MoveException {
 
-        if(row >= 0 && row < 8 && col >= 0 && col < 8){
-
+        if (row >= 0 && row < 8 && col >= 0 && col < 8) {
             ReversiPiece piece = board[row][col];
 
-            List<Map<ReversiPiece, int[]>> toFlip;
+            if (piece == null) {
 
-            if(piece == null && (toFlip = findOpponentsToFlip(row, col)).size() > 0){
+                List<Map<ReversiPiece, int[]>> toFlip = findOpponentsToFlip(row, col);
+
+                if (toFlip.size() == 0) {
+                    throw new MoveException("Invalid move by " + currentPlayer +
+                            ". That move will not flip any opponent pieces.");
+                }
 
                 board[row][col] = new ReversiPiece(currentPlayer);
                 numWhite += currentPlayer == PieceColor.WHITE ? 1 : 0;
                 numBlack += currentPlayer == PieceColor.BLACK ? 1 : 0;
                 alertObservers(row, col, board[row][col].getColor());
 
-                for(Map<ReversiPiece, int[]> map : toFlip){
-                    for(ReversiPiece key : map.keySet()){
+                for (Map<ReversiPiece, int[]> map : toFlip) {
+                    for (ReversiPiece key : map.keySet()) {
                         int[] coords = map.get(key);
-                        if(currentPlayer == PieceColor.WHITE){
+                        if (currentPlayer == PieceColor.WHITE) {
                             numBlack--;
                             numWhite++;
                         } else {
@@ -175,9 +176,7 @@ public class ReversiBoard implements ReversiSubscriber {
 
             }
 
-            throw new MoveException("Invalid move by " + currentPlayer +
-                    (piece != null ? ". That space is occupied already." :
-                            ". That move will not flip any opponent pieces."));
+            throw new MoveException("Invalid move by " + currentPlayer + ". That space is occupied already.");
 
         }
 
@@ -198,11 +197,13 @@ public class ReversiBoard implements ReversiSubscriber {
         List<Map<ReversiPiece, int[]>> toFlip = new ArrayList<>();
         Map<ReversiPiece, int[]> flippable;
 
-        for(Compass dir : Compass.values()){
+        for (Compass dir : Compass.values()) {
+
             flippable = searchDirection(row, col, dir);
-            if(flippable.keySet().size() > 0){
+            if (flippable.keySet().size() > 0) {
                 toFlip.add(flippable);
             }
+
         }
 
         return toFlip;
@@ -231,6 +232,9 @@ public class ReversiBoard implements ReversiSubscriber {
 
                     if (toFlip.size() != 0) {
                         return toFlip;
+                    } else {
+                        toFlip.clear();
+                        return toFlip;
                     }
 
                 }
@@ -243,18 +247,108 @@ public class ReversiBoard implements ReversiSubscriber {
 
         }
 
+        toFlip.clear();
         return toFlip;
+    }
+
+    /**
+     * Get a set of the locations of all possible moves the current player can make.
+     *
+     * @return a set of integer arrays containing the row and col of a possible move. Empty set if no moves are
+     * possible for the current player.
+     */
+    public Set<int[]> getPossibleMoves() {
+        Set<int[]> possibleMoves = new HashSet<>();
+
+        for (int r = 0; r < board.length; r++) {
+
+            ReversiPiece[] row = board[r];
+
+            for (int c = 0; c < row.length; c++) {
+
+                if (row[c] != null) {
+                    possibleMoves.addAll(findMovesFromPiece(r, c));
+                }
+
+            }
+        }
+
+        return possibleMoves;
+    }
+
+    /**
+     * Find all possible moves for the current player from a given piece. Assumes the given location contains a piece.
+     *
+     * @param row the row of the piece to check.
+     * @param col the column of the piece to check.
+     * @return a set of the locations of all possible moves for the current player from the piece at the specified
+     * location.
+     */
+    private Set<int[]> findMovesFromPiece(int row, int col) {
+
+        Set<int[]> possibleMoves = new HashSet<>();
+
+        // Return if the piece here is not the current player's color.
+        if (board[row][col].getColor() != currentPlayer) {
+            return possibleMoves;
+        }
+
+        for (Compass dir : Compass.values()) {
+            int[] moveLoc = searchMoveDir(row, col, dir);
+            if (moveLoc != null) {
+                possibleMoves.add(moveLoc);
+            }
+        }
+
+        return possibleMoves;
+
+    }
+
+    /**
+     * Search outward in all directions from the location given to find a possible location the current player
+     * could move. Assumes that the piece at the location specified is the current player's color and is not empty.
+     *
+     * @param row the row to start at.
+     * @param col the column to start at.
+     * @param dir the direction to search in.
+     * @return an integer array containing the row and col of the possible move.
+     */
+    private int[] searchMoveDir(int row, int col, Compass dir) {
+
+        int couldFlip = 0;
+
+        while ((row += dir.getX()) < 8 && row >= 0 && (col += dir.getY()) < 8 && col >= 0) {
+
+            ReversiPiece dPiece = board[row][col];
+
+            if (dPiece == null) {
+                if (couldFlip != 0) {
+                    return new int[]{row, col};
+                } else {
+                    return null;
+                }
+            }
+
+            if (dPiece.getColor() == currentPlayer) {
+                return null;
+            }
+
+            couldFlip++;
+
+        }
+
+        return null;
     }
 
     @Override
     public String toString() {
 
         StringBuilder sb = new StringBuilder();
-        for(ReversiPiece[] row : board){
+        for (ReversiPiece[] row : board) {
 
-            for(ReversiPiece piece : row){
+            for (ReversiPiece piece : row) {
                 sb.append("|");
-                if(piece == null){
+                if (piece == null) {
                     sb.append(" ");
                 } else {
                     sb.append(piece.toString());
@@ -286,4 +380,5 @@ public class ReversiBoard implements ReversiSubscriber {
     public int getNumBlack() {
         return numBlack;
     }
+
 }

@@ -26,8 +26,8 @@ public interface ReversiProtocol {
     String MOVE = "MOVE";
     /**
      * Server to client.<br>
-     *     Sends a move update to both clients.
-     *     Usage: MOVE_MADE #black #white
+     * Sends a move update to both clients.
+     * Usage: MOVE_MADE #black #white
      */
     String MOVE_MADE = "MOVE_MADE";
     /**
@@ -50,14 +50,14 @@ public interface ReversiProtocol {
     String GAME_WON = "GAME_WON";
     /**
      * Server to client.<br>
-     *      Tell a client that they lost the game.<br>
-     *      Usage: GAME_LOST to the client that lost the game.
+     * Tell a client that they lost the game.<br>
+     * Usage: GAME_LOST to the client that lost the game.
      */
     String GAME_LOST = "GAME_LOST";
     /**
      * Server to client.<br>
-     *      Tell a client that they tied the game.<br>
-     *      Usage: GAME_TIED to the client that tied the game.
+     * Tell a client that they tied the game.<br>
+     * Usage: GAME_TIED to the client that tied the game.
      */
     String GAME_TIED = "GAME_TIED";
     /**

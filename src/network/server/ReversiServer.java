@@ -17,7 +17,7 @@ import java.util.Scanner;
  *
  * @author Brock Dyer.
  */
-public class ReversiServer implements ReversiObserver, Runnable{
+public class ReversiServer implements ReversiObserver, Runnable {
 
     /**
      * The instance of the game logic.
@@ -69,17 +69,16 @@ public class ReversiServer implements ReversiObserver, Runnable{
     @Override
     public void run() {
 
-        while(sentinel){
+        while (sentinel) {
 
             currentPlayer.sendMessage(ReversiProtocol.MAKE_MOVE + " " + game.getBlackScore() + " " +
                     game.getWhiteScore());
-            System.out.println("Sent welcome message.");
 
             String response = currentPlayer.receiveMessage();
             String[] tokens = response.split(" ");
             String[] responseTokens;
 
-            switch (tokens[0]){
+            switch (tokens[0]) {
 
                 case ReversiProtocol.MOVE:
 
@@ -97,10 +96,10 @@ public class ReversiServer implements ReversiObserver, Runnable{
 
                         changeTurn();
 
-                    } catch (MoveException me){
+                    } catch (MoveException me) {
                         System.out.println(me.getMessage());
                         break;
-                    } catch (NumberFormatException nfe){
+                    } catch (NumberFormatException nfe) {
                         System.out.println("Bad response from client! Closing connections...");
                         sentinel = false;
                     }
@@ -115,8 +114,8 @@ public class ReversiServer implements ReversiObserver, Runnable{
                     otherPlayer.sendMessage(ReversiProtocol.SAVE);
 
                     responseTokens = otherPlayer.receiveMessage().split(" ");
-                    if(responseTokens.length == 3){
-                        if(responseTokens[2].equals("true")){
+                    if (responseTokens.length == 3) {
+                        if (responseTokens[2].equals("true")) {
                             // Save the game.
                         }
                     } else {
@@ -130,8 +129,8 @@ public class ReversiServer implements ReversiObserver, Runnable{
                     otherPlayer.sendMessage(ReversiProtocol.LOAD);
 
                     responseTokens = otherPlayer.receiveMessage().split(" ");
-                    if(responseTokens.length == 3){
-                        if(responseTokens[2].equals("true")){
+                    if (responseTokens.length == 3) {
+                        if (responseTokens[2].equals("true")) {
                             // Load the game.
                         }
                     } else {
@@ -144,8 +143,8 @@ public class ReversiServer implements ReversiObserver, Runnable{
                     otherPlayer.sendMessage(ReversiProtocol.QUIT);
 
                     responseTokens = otherPlayer.receiveMessage().split(" ");
-                    if(responseTokens.length == 2){
-                        if(responseTokens[1].equals("true")){
+                    if (responseTokens.length == 2) {
+                        if (responseTokens[1].equals("true")) {
                             game.quit();
                             sentinel = false;
                         }
@@ -159,8 +158,8 @@ public class ReversiServer implements ReversiObserver, Runnable{
                     otherPlayer.sendMessage(ReversiProtocol.RESTART);
 
                     responseTokens = otherPlayer.receiveMessage().split(" ");
-                    if(responseTokens.length == 2){
-                        if(responseTokens[1].equals("true")){
+                    if (responseTokens.length == 2) {
+                        if (responseTokens[1].equals("true")) {
                             game.restart();
                             sentinel = false;
                         }
@@ -181,7 +180,7 @@ public class ReversiServer implements ReversiObserver, Runnable{
         try {
             currentPlayer.close();
             otherPlayer.close();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -189,7 +188,7 @@ public class ReversiServer implements ReversiObserver, Runnable{
     /**
      * Change the duplexer reference of currentPlayer to point to otherPlayer and vice-versa.
      */
-    private void changeTurn(){
+    private void changeTurn() {
         Duplexer temp = currentPlayer;
         currentPlayer = otherPlayer;
         otherPlayer = temp;
@@ -198,14 +197,14 @@ public class ReversiServer implements ReversiObserver, Runnable{
 
     /**
      * Start the server program.<br>
-     *     The server will keep accept a pair of clients and start a game between those two.
-     *     The server will then wait for that game to finish and accept another pair.
+     * The server will keep accept a pair of clients and start a game between those two.
+     * The server will then wait for that game to finish and accept another pair.
      *
      * @param args cmd-line args. Expects the port to run the server on.
      */
     public static void main(String[] args) {
 
-        if(args.length != 1){
+        if (args.length != 1) {
             System.out.println("Usage: java ReversiServer #port");
             System.exit(-1);
         } else {
@@ -219,7 +218,7 @@ public class ReversiServer implements ReversiObserver, Runnable{
                 boolean accept = true;
                 Scanner scanner = new Scanner(System.in);
 
-                while(accept) {
+                while (accept) {
 
                     Duplexer client1 = new Duplexer(serverSocket.accept());
                     System.out.println("Client 1 connected...");
@@ -236,7 +235,7 @@ public class ReversiServer implements ReversiObserver, Runnable{
 
                     try {
                         t.join();
-                    } catch (InterruptedException ie){
+                    } catch (InterruptedException ie) {
                         ie.printStackTrace();
                     }
 
@@ -248,7 +247,7 @@ public class ReversiServer implements ReversiObserver, Runnable{
 
                 serverSocket.close();
 
-            } catch (IOException ioe){
+            } catch (IOException ioe) {
                 ioe.printStackTrace();
             }
 

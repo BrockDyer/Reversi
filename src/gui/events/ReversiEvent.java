@@ -17,8 +17,8 @@ public class ReversiEvent {
     /**
      * Construct a ReversiEvent object.
      *
-     * @param row the row of the event.
-     * @param col the column of the event.
+     * @param row   the row of the event.
+     * @param col   the column of the event.
      * @param color the color of the piece involved with the event.
      * @param debug the debug information for this event.
      */
@@ -32,8 +32,8 @@ public class ReversiEvent {
     /**
      * Construct a ReversiEvent object.
      *
-     * @param row the row of the event.
-     * @param col the column of the event.
+     * @param row   the row of the event.
+     * @param col   the column of the event.
      * @param color the color of the piece involved with the event.
      */
     public ReversiEvent(int row, int col, PieceColor color) {
@@ -47,7 +47,7 @@ public class ReversiEvent {
      *
      * @return the row of the event.
      */
-    public int getRow(){
+    public int getRow() {
         return this.row;
     }
 
@@ -56,7 +56,7 @@ public class ReversiEvent {
      *
      * @return the column of the event.
      */
-    public int getCol(){
+    public int getCol() {
         return this.col;
     }
 
@@ -65,14 +65,14 @@ public class ReversiEvent {
      *
      * @return the color of the piece.
      */
-    public PieceColor getColor(){
+    public PieceColor getColor() {
         return this.color;
     }
 
     /**
      * Print out debug information for the event.
      */
-    public void debug(){
+    public void debug() {
         System.out.println(debug);
     }
 }

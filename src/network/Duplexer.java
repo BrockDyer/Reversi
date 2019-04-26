@@ -10,7 +10,7 @@ import java.util.Scanner;
  *
  * @author Brock Dyer.
  */
-public class Duplexer implements AutoCloseable{
+public class Duplexer implements AutoCloseable {
 
     /**
      * The socket to communicate over.
@@ -29,7 +29,6 @@ public class Duplexer implements AutoCloseable{
      * Creates a new Duplexer.
      *
      * @param socket the socket to communicate over.
-     *
      * @throws IOException if something goes wrong initializing io.
      */
     public Duplexer(Socket socket) throws IOException {
@@ -43,7 +42,7 @@ public class Duplexer implements AutoCloseable{
      *
      * @param msg the message to send.
      */
-    public void sendMessage(String msg){
+    public void sendMessage(String msg) {
         writer.println(msg);
         writer.flush();
     }
@@ -54,7 +53,7 @@ public class Duplexer implements AutoCloseable{
      *
      * @return the message received.
      */
-    public String receiveMessage(){
+    public String receiveMessage() {
         return scanner.nextLine();
     }
 

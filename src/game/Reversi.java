@@ -5,6 +5,8 @@ import gui.ReversiGUI;
 import gui.events.ReversiEvent;
 import util.MoveException;
 
+import java.util.Set;
+
 /**
  * Represent a local player of the reversi game.
  *
@@ -51,6 +53,11 @@ public class Reversi implements ReversiPlayer, ReversiObserver {
     @Override
     public void pass() {
         game.pass();
+    }
+
+    @Override
+    public Set<int[]> getMoves() {
+        return game.getPossibleMoves();
     }
 
     @Override

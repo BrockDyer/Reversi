@@ -22,7 +22,9 @@ import network.client.ReversiClient;
 import util.MoveException;
 
 import java.net.Socket;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -45,11 +47,19 @@ public class ReversiGUI extends Application {
      * The path to the white piece image.
      */
     private final String WHITE = "media/white.png";
+    /**
+     * The path to the possible move overlay image.
+     */
+    private final String MOVE_OVERLAY = "media/highlight.png";
+    /**
+     * The path to the blank overlay image.
+     */
+    private final String BLANK_OVERLAY = "media/blank.png";
 
     /**
      * The number of rows and columns in the board.
      */
-    private final int boardSize = 8;
+    private final int BOARD_SIZE = 8;
 
     /**
      * The player using this GUI.
@@ -72,6 +82,16 @@ public class ReversiGUI extends Application {
     private GridPane boardPane;
 
     /**
+     * The previous set of possible moves.
+     */
+    private Set<int[]> lastMoveSet;
+
+    /**
+     * The last row and column that a move were made in.
+     */
+    private int lastRow, lastCol;
+
+    /**
      * The font to use to display the score.
      */
     private Font scoreFont;
@@ -86,9 +106,13 @@ public class ReversiGUI extends Application {
 
         boardPane = new GridPane();
 
-        for (int i = 0; i < boardSize; i++) {
+        this.lastMoveSet = new HashSet<>();
+        lastRow = -1;
+        lastCol = -1;
 
-            for (int j = 0; j < boardSize; j++) {
+        for (int i = 0; i < BOARD_SIZE; i++) {
+
+            for (int j = 0; j < BOARD_SIZE; j++) {
 
                 Button b = new Button();
                 b.setPadding(Insets.EMPTY);
@@ -105,11 +129,11 @@ public class ReversiGUI extends Application {
 
         }
 
-        this.blackScore = new Label("x 02");
+        this.blackScore = new Label("x 2");
         blackScore.setFont(scoreFont);
         blackScore.setTextFill(Color.IVORY);
 
-        this.whiteScore = new Label("x 02");
+        this.whiteScore = new Label("x 2");
         whiteScore.setFont(scoreFont);
         whiteScore.setTextFill(Color.IVORY);
 
@@ -129,7 +153,8 @@ public class ReversiGUI extends Application {
 
             this.player = new ReversiClient(socket, this);
 
-            Thread t = new Thread((ReversiClient)this.player);
+            Thread t = new Thread((ReversiClient) this.player);
+            t.setDaemon(true);
             t.start();
 
         } else if (gameType.equals("ai")) {
@@ -137,6 +162,7 @@ public class ReversiGUI extends Application {
 
         } else {
             this.player = new Reversi(this);
+            updateTurn("BLACK");
         }
     }
 
@@ -197,6 +223,9 @@ public class ReversiGUI extends Application {
             int row = Integer.parseInt(b.getId().substring(0, 1));
             int col = Integer.parseInt(b.getId().substring(1, 2));
 
+            lastRow = row;
+            lastCol = col;
+
             try {
                 player.makeMove(row, col);
 
@@ -215,32 +244,34 @@ public class ReversiGUI extends Application {
      */
     public void updateBoard(int row, int col, PieceColor color) {
 
-        int index = row * boardSize + col;
+        int index = row * BOARD_SIZE + col;
         Button b = (Button) boardPane.getChildren().get(index);
         String pieceString = color == PieceColor.BLACK ? BLACK : WHITE;
 
 
         if (Platform.isFxApplicationThread()) {
-            this.updatePiece(b, pieceString);
+            this.updateImage(b, pieceString);
         } else {
-            Platform.runLater(() -> this.updatePiece(b, pieceString));
+            Platform.runLater(() -> this.updateImage(b, pieceString));
         }
     }
 
     /**
-     * Place a piece on the GUI by updating the graphic of the specified button.
+     * Update the graphic of the specified button.
      *
      * @param b the button to set the image of.
      */
-    private void updatePiece(Button b, String pieceString) {
+    private void updateImage(Button b, String imageString) {
 
         StackPane pieceImage;
         Node graphic = b.getGraphic();
-        Image piece = new Image(this.getClass().getResourceAsStream(pieceString));
+        Image piece = new Image(this.getClass().getResourceAsStream(imageString));
 
         if (graphic instanceof StackPane) {
             pieceImage = (StackPane) graphic;
+
             pieceImage.getChildren().remove(1);
+
             pieceImage.getChildren().add(new ImageView(piece));
         } else {
             pieceImage = new StackPane();
@@ -257,7 +288,7 @@ public class ReversiGUI extends Application {
      * @param black the score for black.
      * @param white the score for white.
      */
-    public void updateScore(int black, int white){
+    public void updateScore(int black, int white) {
         this.blackScore.setText("x " + black);
         this.whiteScore.setText("x " + white);
     }
@@ -267,8 +298,32 @@ public class ReversiGUI extends Application {
      *
      * @param player the name of the player whose turn it is.
      */
-    public void updateTurn(String player){
+    public void updateTurn(String player) {
         this.turn.setText(player.substring(0, 1) + player.substring(1).toLowerCase() + "'s" + " Turn");
+
+        // Remove the old overlays.
+        for (int[] loc : lastMoveSet) {
+            int row = loc[0], col = loc[1];
+            if(row == lastRow && col == lastCol){
+                continue;
+            }
+            Button b = (Button) boardPane.getChildren().get(row * BOARD_SIZE + col);
+            updateImage(b, BLANK_OVERLAY);
+        }
+
+        Set<int[]> moveSet = this.player.getMoves();
+        for (int[] loc : moveSet) {
+
+            int row = loc[0], col = loc[1];
+
+            Button b = (Button) boardPane.getChildren().get(row * BOARD_SIZE + col);
+            System.out.println("Button id=" + b.getId() + " row=" + row + " col=" + col);
+
+            updateImage(b, MOVE_OVERLAY);
+        }
+
+        System.out.println();
+        this.lastMoveSet = moveSet;
     }
 
 }

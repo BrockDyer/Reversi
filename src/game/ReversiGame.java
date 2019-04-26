@@ -3,6 +3,8 @@ package game;
 import game.observer.ReversiObserver;
 import util.MoveException;
 
+import java.util.Set;
+
 /**
  * Holds the core logic of the reversi game. <br>
  * Checks win conditions.<br>
@@ -23,14 +25,15 @@ public class ReversiGame {
     private final int numSquares = 64;
 
     /**
-     * Two passes in a row means that the game is over.
-     */
-    private int passCount;
-
-    /**
      * A boolean flag for checking if the game is over. This will be used more in the network implementation.
      */
     private boolean gameOver;
+
+    /**
+     * The number of times a pass has been made. A pass is made if the current player cannot play on the board.
+     * If 2 consecutive passes are made then the game is over.
+     */
+    private int passCount;
 
     /**
      * Initialize the game state.
@@ -45,7 +48,7 @@ public class ReversiGame {
      *
      * @param player the player to register. Player must implement ReversiObserver.
      */
-    public void registerPlayerWithBoard(ReversiObserver player){
+    public void registerPlayerWithBoard(ReversiObserver player) {
         this.board.register(player);
         board.reset();
     }
@@ -57,7 +60,7 @@ public class ReversiGame {
      * @param col the column the piece is in.
      * @return the piece at that position, null if there is no piece there.
      */
-    public ReversiPiece getPieceAt(int row, int col){
+    public ReversiPiece getPieceAt(int row, int col) {
         return board.getPiece(row, col);
     }
 
@@ -95,7 +98,7 @@ public class ReversiGame {
      *
      * @return black's score.
      */
-    public int getBlackScore(){
+    public int getBlackScore() {
         return board.getNumBlack();
     }
 
@@ -104,7 +107,7 @@ public class ReversiGame {
      *
      * @return white's score.
      */
-    public int getWhiteScore(){
+    public int getWhiteScore() {
         return board.getNumWhite();
     }
 
@@ -115,6 +118,7 @@ public class ReversiGame {
      * @param col the column to make the move in.
      */
     public void makeMove(int row, int col) throws MoveException {
+
         board.move(row, col);
 
         passCount = 0;
@@ -129,6 +133,11 @@ public class ReversiGame {
 
         board.changeTurn();
 
+        int numMoves = board.getPossibleMoves().size();
+
+        if (numMoves == 0) {
+            pass();
+        }
 
     }
 
@@ -137,7 +146,22 @@ public class ReversiGame {
      */
     public void pass() {
         passCount++;
+
+        if (passCount == 2) {
+            gameOver = true;
+        }
+
         board.changeTurn();
+    }
+
+    /**
+     * Get a list of possible moves for the current player.
+     *
+     * @return a list of integer arrays containing the row and column of every possible move for the current player.
+     * Empty list if no moves are possible.
+     */
+    public Set<int[]> getPossibleMoves() {
+        return board.getPossibleMoves();
     }
 
     /**

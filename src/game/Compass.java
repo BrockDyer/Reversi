@@ -3,36 +3,53 @@ package game;
 /**
  * Represent the 8 compass directions.
  * <p>
- *          N
- *      NW     NE
- *   W      X      E
- *      SW     SE
- *          S
+ * N
+ * NW     NE
+ * W      X      E
+ * SW     SE
+ * S
  * </p>
  *
  * @author Brock Dyer.
  */
 public enum Compass {
 
-    /** North */
+    /**
+     * North
+     */
     N(new int[]{-1, 0}),
-    /** South */
+    /**
+     * South
+     */
     S(new int[]{1, 0}),
-    /** East */
+    /**
+     * East
+     */
     E(new int[]{0, 1}),
-    /** West */
+    /**
+     * West
+     */
     W(new int[]{0, -1}),
-    /** Northeast */
+    /**
+     * Northeast
+     */
     NE(new int[]{-1, 1}),
-    /** Northwest */
+    /**
+     * Northwest
+     */
     NW(new int[]{-1, -1}),
-    /** Southeast */
+    /**
+     * Southeast
+     */
     SE(new int[]{1, 1}),
-    /** Southwest */
+    /**
+     * Southwest
+     */
     SW(new int[]{1, -1});
 
-    /** The coordinates of this direction. <br>
-     *  These are used to calculate the position of the next piece in the given direction.
+    /**
+     * The coordinates of this direction. <br>
+     * These are used to calculate the position of the next piece in the given direction.
      */
     private int[] coords;
 
@@ -41,7 +58,7 @@ public enum Compass {
      *
      * @param coords the coordinates of this direction.
      */
-    Compass(int[] coords){
+    Compass(int[] coords) {
         this.coords = coords;
     }
 
@@ -50,7 +67,7 @@ public enum Compass {
      *
      * @return the x-coordinate.
      */
-    public int getX(){
+    public int getX() {
         return this.coords[0];
     }
 
@@ -59,7 +76,7 @@ public enum Compass {
      *
      * @return the y-coordinate.
      */
-    public int getY(){
+    public int getY() {
         return this.coords[1];
     }
 

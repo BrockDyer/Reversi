@@ -10,6 +10,7 @@ import util.MoveException;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Set;
 
 /**
  * A client in the networked version of the reversi game.
@@ -74,6 +75,11 @@ public class ReversiClient implements ReversiPlayer, Runnable {
     }
 
     @Override
+    public Set<int[]> getMoves() {
+        return null;
+    }
+
+    @Override
     public void restart() {
 
         coms.sendMessage(ReversiProtocol.RESTART);
@@ -119,6 +125,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
                         if (turn.equals("true")) {
                             this.isMyTurn = true;
                             this.myColor = PieceColor.BLACK;
+                            this.gui.updateTurn("BLACK");
                         } else if (turn.equals("false")) {
                             this.isMyTurn = false;
                             this.myColor = PieceColor.WHITE;
@@ -143,7 +150,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
 
                 case ReversiProtocol.MOVE_MADE:
 
-                    if(tokens.length != 3){
+                    if (tokens.length != 3) {
                         System.err.println("Server sent bad request! Closing connection...");
                         sentinel = false;
                         break;

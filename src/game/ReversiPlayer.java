@@ -1,7 +1,8 @@
 package game;
 
-import game.observer.ReversiObserver;
 import util.MoveException;
+
+import java.util.Set;
 
 /**
  * An interface for any type of player that wants to play reversi. <br>
@@ -16,10 +17,16 @@ public interface ReversiPlayer {
      *
      * @param row the row to make the move in.
      * @param col the column to make a move in.
-     *
      * @throws MoveException thrown if the move requested was invalid.
      */
     void makeMove(int row, int col) throws MoveException;
+
+    /**
+     * Get a list of the location of every move this player has.
+     *
+     * @return the list of all possible move locations for this player.
+     */
+    Set<int[]> getMoves();
 
     /**
      * Pass this player's turn to the opponent.
@@ -28,13 +35,13 @@ public interface ReversiPlayer {
 
     /**
      * Restart the game.<br>
-     *     If this is a networked game then both players must agree.
+     * If this is a networked game then both players must agree.
      */
     void restart();
 
     /**
      * Save the current game for later.<br>
-     *     If this is a networked game then both players must agree.
+     * If this is a networked game then both players must agree.
      *
      * @param filename the name of the file to save the game state to.
      */
@@ -42,7 +49,7 @@ public interface ReversiPlayer {
 
     /**
      * Load a game saved in the file system.<br>
-     *     If this is a networked game then both players must agree.
+     * If this is a networked game then both players must agree.
      *
      * @param filename the name of the file to load.
      */

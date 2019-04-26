@@ -11,6 +11,7 @@ public interface ReversiObserver {
 
     /**
      * Handle a reversi event.
+     *
      * @param re the reversi event that needs to be handled by the observer.
      */
     void handle(ReversiEvent re);
