@@ -20,6 +20,18 @@ public interface ReversiProtocol {
     String MAKE_MOVE = "MAKE_MOVE";
     /**
      * Client to server.<br>
+     * The player is asking the server to send a set of available moves they can make.<br>
+     * Usage: GET_MOVES
+     */
+    String GET_MOVES = "GET_MOVES";
+    /**
+     * Server to client.<br>
+     * Tell the client what its available moves are.<br>
+     * Usage: SEND_MOVES #row1 #col1 ... #rown #coln
+     */
+    String SEND_MOVES = "SEND_MOVES";
+    /**
+     * Client to server.<br>
      * Sends a move request to the server.<br>
      * Usage: MOVE #row #col
      */

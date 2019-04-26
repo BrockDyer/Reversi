@@ -11,6 +11,7 @@ import util.MoveException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * The server for the reversi game.
@@ -105,6 +106,15 @@ public class ReversiServer implements ReversiObserver, Runnable {
                     }
 
                     break;
+
+                case ReversiProtocol.GET_MOVES:
+
+                    if(tokens.length != 2){
+                        System.out.println("Bad request from client! Closing connections...");
+                        sentinel = false;
+                    }
+
+                    Set<int[]> moveSet = game.getPossibleMoves();
 
                 case ReversiProtocol.PASS:
                     game.pass();

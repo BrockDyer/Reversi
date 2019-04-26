@@ -76,6 +76,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
 
     @Override
     public Set<int[]> getMoves() {
+
         return null;
     }
 
