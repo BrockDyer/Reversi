@@ -157,6 +157,7 @@ public class ReversiGUI extends Application {
         } else {
             this.player = new Reversi(this);
             updateTurn("BLACK");
+            showAvailableMoves();
         }
     }
 
@@ -293,7 +294,12 @@ public class ReversiGUI extends Application {
      */
     public void updateTurn(String player) {
         this.turn.setText(player.substring(0, 1) + player.substring(1).toLowerCase() + "'s" + " Turn");
+    }
 
+    /**
+     * Display the moves available to the player.
+     */
+    public void showAvailableMoves(){
         Set<Point> moveSet = this.player.getMoves();
 
         for (Point loc : moveSet) {
