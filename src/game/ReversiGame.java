@@ -72,12 +72,12 @@ public class ReversiGame {
      *
      * @return a string representing the player with the highest score or "Draw" if the game is tied.
      */
-    private String getWinner() {
+    public String getWinner() {
 
         int nb = board.getNumBlack();
         int nw = board.getNumWhite();
 
-        return nb == nw ? "Draw" : (nb > nw ? "BLACK" : "WHITE");
+        return nb == nw ? "Draw" : (nb > nw ? "Black Won!" : "White Won!");
 
     }
 
@@ -90,8 +90,8 @@ public class ReversiGame {
      *
      * @return true if the game is over.
      */
-    private boolean isGameOver() {
-        return gameOver || board.getNumBlack() + board.getNumWhite() == numSquares;
+    public boolean isGameOver() {
+        return gameOver;
     }
 
     /**
@@ -126,10 +126,8 @@ public class ReversiGame {
 
         PieceColor cp = board.getCurrentPlayer();
 
-
-        if (isGameOver()) {
+        if (board.getNumBlack() + board.getNumWhite() == numSquares) {
             gameOver = true;
-            // Do any game ending stuff here.
         }
 
         board.changeTurn();

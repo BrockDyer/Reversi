@@ -68,8 +68,11 @@ public class ReversiClient implements ReversiPlayer, Runnable {
     @Override
     public void makeMove(int row, int col) throws MoveException {
 
-        Platform.runLater(() -> gui.updateTurn(myColor == PieceColor.WHITE ? PieceColor.BLACK.toString() :
-                PieceColor.WHITE.toString()));
+        String text = myColor == PieceColor.WHITE ? PieceColor.BLACK.toString() :
+                PieceColor.WHITE.toString();
+        Platform.runLater(() -> gui.updateIndicatorLabel(text.substring(0, 1) +
+                text.substring(1).toLowerCase() + "'s Turn"));
+
         moveSet.clear();
         coms.sendMessage(ReversiProtocol.MOVE + " " + row + " " + col);
 
@@ -177,7 +180,9 @@ public class ReversiClient implements ReversiPlayer, Runnable {
                         break;
                     }
                     this.isMyTurn = true;
-                    Platform.runLater(() -> gui.updateTurn(myColor.toString()));
+                    String text = myColor.toString();
+                    Platform.runLater(() -> gui.updateIndicatorLabel(text.substring(0, 1) +
+                            text.substring(1).toLowerCase() + "'s Turn"));
 
                     readMoveSet(tokens);
                     Platform.runLater(gui::showAvailableMoves);
@@ -231,18 +236,21 @@ public class ReversiClient implements ReversiPlayer, Runnable {
                 case ReversiProtocol.GAME_WON:
 
                     // Update the user's GUI to show that they won against their opponent.
+                    Platform.runLater(() -> gui.updateIndicatorLabel("You won!"));
 
                     break;
 
                 case ReversiProtocol.GAME_LOST:
 
                     // Update the user's GUI to show that they lost to their opponent.
+                    Platform.runLater(() -> gui.updateIndicatorLabel("You lost!"));
 
                     break;
 
                 case ReversiProtocol.GAME_TIED:
 
                     // Update the user's GUI to show that they tied with their opponent.
+                    Platform.runLater(() -> gui.updateIndicatorLabel("It's a draw!"));
 
                     break;
 

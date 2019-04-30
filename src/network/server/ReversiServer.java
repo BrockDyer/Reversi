@@ -115,6 +115,29 @@ public class ReversiServer implements ReversiObserver, Runnable {
                                 " " + game.getWhiteScore());
 
                         // Do game end condition checking.
+                        if(game.isGameOver()){
+                            String winner = game.getWinner().toLowerCase();
+                            if(winner.contains("black")){
+                                if(currentColor == PieceColor.BLACK){
+                                    currentPlayer.sendMessage(ReversiProtocol.GAME_WON);
+                                    otherPlayer.sendMessage(ReversiProtocol.GAME_LOST);
+                                } else {
+                                    currentPlayer.sendMessage(ReversiProtocol.GAME_LOST);
+                                    otherPlayer.sendMessage(ReversiProtocol.GAME_WON);
+                                }
+                            } else if(winner.contains("white")){
+                                if(currentColor == PieceColor.WHITE){
+                                    currentPlayer.sendMessage(ReversiProtocol.GAME_WON);
+                                    otherPlayer.sendMessage(ReversiProtocol.GAME_LOST);
+                                } else {
+                                    currentPlayer.sendMessage(ReversiProtocol.GAME_LOST);
+                                    otherPlayer.sendMessage(ReversiProtocol.GAME_WON);
+                                }
+                            } else {
+                                currentPlayer.sendMessage(ReversiProtocol.GAME_TIED);
+                                otherPlayer.sendMessage(ReversiProtocol.GAME_TIED);
+                            }
+                        }
 
                         changeTurn();
 

@@ -73,9 +73,9 @@ public class ReversiGUI extends Application {
     private Label blackScore, whiteScore;
 
     /**
-     * Label for whose turn.
+     * Label for whose indicator.
      */
-    private Label turn;
+    private Label indicator;
 
     /**
      * The control to display the board to the user.
@@ -131,9 +131,9 @@ public class ReversiGUI extends Application {
         whiteScore.setFont(scoreFont);
         whiteScore.setTextFill(Color.IVORY);
 
-        this.turn = new Label("Black's Turn");
-        turn.setFont(scoreFont);
-        turn.setTextFill(Color.IVORY);
+        this.indicator = new Label("Black's Turn");
+        indicator.setFont(scoreFont);
+        indicator.setTextFill(Color.IVORY);
 
         String gameType = args.get(0);
 
@@ -156,7 +156,7 @@ public class ReversiGUI extends Application {
 
         } else {
             this.player = new Reversi(this);
-            updateTurn("BLACK");
+            updateIndicatorLabel("Black's Turn");
             showAvailableMoves();
         }
     }
@@ -174,7 +174,7 @@ public class ReversiGUI extends Application {
         HBox.setHgrow(right, Priority.ALWAYS);
 
 
-        hBox.getChildren().addAll(blackIcon, blackScore, left, turn, right, whiteIcon, whiteScore);
+        hBox.getChildren().addAll(blackIcon, blackScore, left, indicator, right, whiteIcon, whiteScore);
         hBox.setAlignment(Pos.CENTER);
         hBox.setBackground(new Background(new BackgroundFill(Color.SADDLEBROWN, CornerRadii.EMPTY, Insets.EMPTY)));
 
@@ -291,12 +291,12 @@ public class ReversiGUI extends Application {
     }
 
     /**
-     * Update the turn label.
+     * Update the indicator indicator label.
      *
-     * @param player the name of the player whose turn it is.
+     * @param text the text to display on the indicator label.
      */
-    public void updateTurn(String player) {
-        this.turn.setText(player.substring(0, 1) + player.substring(1).toLowerCase() + "'s" + " Turn");
+    public void updateIndicatorLabel(String text) {
+        this.indicator.setText(text);
     }
 
     /**

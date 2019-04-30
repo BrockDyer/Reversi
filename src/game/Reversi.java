@@ -48,8 +48,18 @@ public class Reversi implements ReversiPlayer, ReversiObserver {
         game.makeMove(row, col);
 
         gui.updateScore(game.getBlackScore(), game.getWhiteScore());
-        gui.updateTurn(game.getPieceAt(row, col).getColor() == PieceColor.BLACK ?
-                PieceColor.WHITE.toString() : PieceColor.BLACK.toString());
+
+        // Game win checking here.
+        if(game.isGameOver()){
+            String winner = game.getWinner();
+            gui.updateIndicatorLabel(winner);
+            return;
+        }
+
+        String player = game.getPieceAt(row, col).getColor() == PieceColor.BLACK ?
+                PieceColor.WHITE.toString() : PieceColor.BLACK.toString();
+        gui.updateIndicatorLabel(player.substring(0, 1) + player.substring(1).toLowerCase() +
+                "'s Turn");
 
         gui.showAvailableMoves();
     }
