@@ -11,6 +11,7 @@ import util.MoveException;
 import java.awt.*;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -46,12 +47,18 @@ public class ReversiClient implements ReversiPlayer, Runnable {
     private PieceColor myColor;
 
     /**
+     * The set of moves available to the player.
+     */
+    private Set<Point> moveSet;
+
+    /**
      * Create a new reversi client, this is a player.
      *
      * @param socket the socket to communicate with the server.
      * @throws IOException thrown if a duplexer cannot be constructed from the given socket.
      */
     public ReversiClient(Socket socket, ReversiGUI gui) throws IOException {
+        this.moveSet = new HashSet<>();
         this.coms = new Duplexer(socket);
         this.gui = gui;
         this.sentinel = true;
@@ -63,6 +70,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
 
         Platform.runLater(() -> gui.updateTurn(myColor == PieceColor.WHITE ? PieceColor.BLACK.toString() :
                 PieceColor.WHITE.toString()));
+        moveSet.clear();
         coms.sendMessage(ReversiProtocol.MOVE + " " + row + " " + col);
 
     }
@@ -78,7 +86,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
     @Override
     public Set<Point> getMoves() {
 
-        return null;
+        return this.moveSet;
     }
 
     @Override
@@ -107,6 +115,23 @@ public class ReversiClient implements ReversiPlayer, Runnable {
         coms.sendMessage(ReversiProtocol.QUIT);
     }
 
+    /**
+     * Read this player's available moves from the string tokens received from the server.
+     *
+     * @param tokens an array of strings representing the individual data sent to the client.
+     */
+    private void readMoveSet(String[] tokens){
+
+        this.moveSet.clear();
+
+        for(int i = 1; i < tokens.length; i += 2){
+            int row = Integer.parseInt(tokens[i]);
+            int col = Integer.parseInt(tokens[i + 1]);
+            this.moveSet.add(new Point(row, col));
+        }
+
+    }
+
     @Override
     public void run() {
 
@@ -121,13 +146,13 @@ public class ReversiClient implements ReversiPlayer, Runnable {
             switch (tokens[0]) {
 
                 case ReversiProtocol.WELCOME:
-                    if (tokens.length == 2) {
+                    if (tokens.length % 2 == 0) {
 
                         String turn = tokens[1];
                         if (turn.equals("true")) {
                             this.isMyTurn = true;
                             this.myColor = PieceColor.BLACK;
-                            this.gui.updateTurn("BLACK");
+
                         } else if (turn.equals("false")) {
                             this.isMyTurn = false;
                             this.myColor = PieceColor.WHITE;
@@ -146,8 +171,16 @@ public class ReversiClient implements ReversiPlayer, Runnable {
                     break;
 
                 case ReversiProtocol.MAKE_MOVE:
+                    if(tokens.length % 2 == 0){
+                        System.err.println("Server sent bad request! Missing a row col pair. Closing connection...");
+                        sentinel = false;
+                        break;
+                    }
                     this.isMyTurn = true;
                     Platform.runLater(() -> gui.updateTurn(myColor.toString()));
+
+                    readMoveSet(tokens);
+                    Platform.runLater(gui::showAvailableMoves);
                     break;
 
                 case ReversiProtocol.MOVE_MADE:

@@ -219,12 +219,15 @@ public class ReversiGUI extends Application {
             int col = Integer.parseInt(b.getId().substring(1, 2));
 
             lastMoveSet.remove(new Point(row, col));
+            // Remove the old overlays.
+            iterateMoveSet(lastMoveSet, BLANK_OVERLAY);
 
             try {
                 player.makeMove(row, col);
 
             } catch (MoveException me) {
                 System.out.println(me.getMessage());
+                showAvailableMoves();
             }
         }
     }
@@ -302,28 +305,20 @@ public class ReversiGUI extends Application {
     public void showAvailableMoves(){
         Set<Point> moveSet = this.player.getMoves();
 
-        for (Point loc : moveSet) {
-
-            if(lastMoveSet.contains(loc)){
-                lastMoveSet.remove(loc);
-                continue;
-            }
-
-            int row = loc.x, col = loc.y;
-
-            Button b = (Button) boardPane.getChildren().get(row * BOARD_SIZE + col);
-
-            updateImage(b, MOVE_OVERLAY);
-        }
-
-        // Remove the old overlays.
-        for (Point loc : lastMoveSet) {
-            int row = loc.x, col = loc.y;
-            Button b = (Button) boardPane.getChildren().get(row * BOARD_SIZE + col);
-            updateImage(b, BLANK_OVERLAY);
-        }
+        iterateMoveSet(moveSet, MOVE_OVERLAY);
 
         this.lastMoveSet = moveSet;
     }
 
+
+    private void iterateMoveSet(Set<Point> moveSet, String imageOverlay){
+        for (Point loc : moveSet) {
+
+            int row = loc.x, col = loc.y;
+
+            Button b = (Button) boardPane.getChildren().get(row * BOARD_SIZE + col);
+
+            updateImage(b, imageOverlay);
+        }
+    }
 }

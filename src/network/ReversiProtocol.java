@@ -9,27 +9,17 @@ public interface ReversiProtocol {
     /**
      * Server to client.<br>
      * Sends a welcome message to the two clients. <br>
-     * Usage: WELCOME (String) "true" if it is the receiving player's turn, "false" otherwise.
+     * Usage: WELCOME false
+     * Usage: WELCOME true #row1 #col1 ... #rown #coln
      */
     String WELCOME = "WELCOME";
     /**
      * Server to client.<br>
      * Tell the client it is their turn.<br>
-     * Usage: MAKE_MOVE
+     * Also send a set of available moves. This is done by sending each row and column separated by a space.
+     * Usage: MAKE_MOVE #row1 #col1 ... #rown #coln
      */
     String MAKE_MOVE = "MAKE_MOVE";
-    /**
-     * Client to server.<br>
-     * The player is asking the server to send a set of available moves they can make.<br>
-     * Usage: GET_MOVES
-     */
-    String GET_MOVES = "GET_MOVES";
-    /**
-     * Server to client.<br>
-     * Tell the client what its available moves are.<br>
-     * Usage: SEND_MOVES #row1 #col1 ... #rown #coln
-     */
-    String SEND_MOVES = "SEND_MOVES";
     /**
      * Client to server.<br>
      * Sends a move request to the server.<br>

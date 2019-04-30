@@ -68,13 +68,33 @@ public class ReversiServer implements ReversiObserver, Runnable {
         otherPlayer.sendMessage(ReversiProtocol.PIECE_UPDATE + " " + row + " " + col + " " + color);
     }
 
+    /**
+     * Turn the set of moves available to the current player into a string formatted for the transmission protocol.
+     *
+     * @return the formatted string representation of the set.
+     */
+    private String moveSetMsg(){
+
+        Set<Point> moveSet = game.getPossibleMoves();
+
+        StringBuilder sb = new StringBuilder();
+        for(Point p : moveSet){
+            sb.append(" ");
+            sb.append(p.x);
+            sb.append(" ");
+            sb.append(p.y);
+        }
+
+        return sb.toString();
+
+    }
+
     @Override
     public void run() {
 
         while (sentinel) {
 
-            currentPlayer.sendMessage(ReversiProtocol.MAKE_MOVE + " " + game.getBlackScore() + " " +
-                    game.getWhiteScore());
+            currentPlayer.sendMessage(ReversiProtocol.MAKE_MOVE + moveSetMsg());
 
             String response = currentPlayer.receiveMessage();
             String[] tokens = response.split(" ");
@@ -107,15 +127,6 @@ public class ReversiServer implements ReversiObserver, Runnable {
                     }
 
                     break;
-
-                case ReversiProtocol.GET_MOVES:
-
-                    if(tokens.length != 2){
-                        System.out.println("Bad request from client! Closing connections...");
-                        sentinel = false;
-                    }
-
-                    Set<Point> moveSet = game.getPossibleMoves();
 
                 case ReversiProtocol.PASS:
                     game.pass();
