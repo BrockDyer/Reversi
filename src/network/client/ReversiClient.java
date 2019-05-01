@@ -145,7 +145,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
             try {
                 fromServer = coms.receiveMessage();
             } catch (NoSuchElementException nsee){
-                System.out.println("Server closed connection.");
+                Platform.runLater(() -> gui.updateIndicatorLabel("Server closed connection."));
                 sentinel = false;
                 break;
             }
@@ -168,6 +168,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
                             this.myColor = PieceColor.WHITE;
                         } else {
                             System.err.println("Server sent invalid command parameter! Closing connection...");
+                            Platform.runLater(() -> gui.updateIndicatorLabel("Connection closed!"));
                             sentinel = false;
                             break;
                         }
@@ -176,6 +177,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
 
                     } else {
                         System.err.println("Server sent bad request! Closing connection...");
+                        Platform.runLater(() -> gui.updateIndicatorLabel("Connection closed!"));
                         sentinel = false;
                     }
                     break;
@@ -183,6 +185,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
                 case ReversiProtocol.MAKE_MOVE:
                     if(tokens.length % 2 == 0){
                         System.err.println("Server sent bad request! Missing a row col pair. Closing connection...");
+                        Platform.runLater(() -> gui.updateIndicatorLabel("Connection closed!"));
                         sentinel = false;
                         break;
                     }
@@ -199,6 +202,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
 
                     if (tokens.length != 3) {
                         System.err.println("Server sent bad request! Closing connection...");
+                        Platform.runLater(() -> gui.updateIndicatorLabel("Connection closed!"));
                         sentinel = false;
                         break;
                     }
@@ -211,6 +215,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
 
                     } catch (NumberFormatException nfe){
                         System.err.println("Server sent bad packet! Closing connection...");
+                        Platform.runLater(() -> gui.updateIndicatorLabel("Connection closed!"));
                         sentinel = false;
                     }
 
@@ -231,6 +236,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
                                 color = PieceColor.WHITE;
                             } else {
                                 System.err.println("Server sent invalid color! Closing connection...");
+                                Platform.runLater(() -> gui.updateIndicatorLabel("Connection closed!"));
                                 sentinel = false;
                                 break;
                             }
@@ -242,11 +248,13 @@ public class ReversiClient implements ReversiPlayer, Runnable {
                             }
                         } catch (NumberFormatException nfe){
                             System.err.println("Server sent bad packet!");
+                            Platform.runLater(() -> gui.updateIndicatorLabel("Connection closed!"));
                             sentinel = false;
                         }
 
                     } else {
                         System.err.println("Server sent bad message! Closing connection...");
+                        Platform.runLater(() -> gui.updateIndicatorLabel("Connection closed!"));
                         sentinel = false;
                     }
                     break;
@@ -255,6 +263,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
 
                     // Update the user's GUI to show that they won against their opponent.
                     Platform.runLater(() -> gui.updateIndicatorLabel("You won!"));
+                    sentinel = false;
 
                     break;
 
@@ -262,6 +271,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
 
                     // Update the user's GUI to show that they lost to their opponent.
                     Platform.runLater(() -> gui.updateIndicatorLabel("You lost!"));
+                    sentinel = false;
 
                     break;
 
@@ -269,6 +279,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
 
                     // Update the user's GUI to show that they tied with their opponent.
                     Platform.runLater(() -> gui.updateIndicatorLabel("It's a draw!"));
+                    sentinel = false;
 
                     break;
 
@@ -298,6 +309,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
 
                 default:
                     System.err.println("Server sent an unknown request! Closing connection...");
+                    Platform.runLater(() -> gui.updateIndicatorLabel("Connection closed!"));
                     sentinel = false;
                     break;
             }
@@ -306,6 +318,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
 
         try {
             coms.close();
+            System.out.println("Client duplexer closed.");
         } catch (Exception e) {
             e.printStackTrace();
         }

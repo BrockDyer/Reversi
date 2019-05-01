@@ -11,6 +11,7 @@ import util.MoveException;
 import java.awt.*;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -96,7 +97,14 @@ public class ReversiServer implements ReversiObserver, Runnable {
 
             currentPlayer.sendMessage(ReversiProtocol.MAKE_MOVE + moveSetMsg());
 
-            String response = currentPlayer.receiveMessage();
+            String response;
+            try {
+                response = currentPlayer.receiveMessage();
+            } catch (NoSuchElementException nsee){
+                System.out.println(currentColor + " has disconnected. Closing connection with the other player...");
+                sentinel = false;
+                break;
+            }
             String[] tokens = response.split(" ");
             String[] responseTokens;
 
@@ -138,6 +146,7 @@ public class ReversiServer implements ReversiObserver, Runnable {
                                 otherPlayer.sendMessage(ReversiProtocol.GAME_TIED);
                             }
 
+                            System.out.println(winner);
                             sentinel = false;
 
                         }
