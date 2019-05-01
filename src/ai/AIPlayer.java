@@ -18,6 +18,8 @@ import java.util.Set;
  */
 public class AIPlayer implements ReversiPlayer, ReversiObserver, Runnable {
 
+    private final int MOVE_DELAY = 1000;
+
     /**
      * The ai this player uses to pick its moves.
      */
@@ -41,7 +43,7 @@ public class AIPlayer implements ReversiPlayer, ReversiObserver, Runnable {
     /**
      * The color of the current player's piece.
      */
-    private PieceColor color;
+    private PieceColor currentColor;
 
     /**
      * A flag to determine if it the ai's turn.
@@ -67,7 +69,7 @@ public class AIPlayer implements ReversiPlayer, ReversiObserver, Runnable {
         this.isMyTurn = false;
         this.sentinel = true;
 
-        this.color = PieceColor.BLACK;
+        this.currentColor = PieceColor.BLACK;
         this.ai.registerPlayerWithBoard(this);
     }
 
@@ -87,7 +89,7 @@ public class AIPlayer implements ReversiPlayer, ReversiObserver, Runnable {
                 }
 
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(MOVE_DELAY);
                 } catch (InterruptedException ie){
                     ie.printStackTrace();
                 }
@@ -95,6 +97,7 @@ public class AIPlayer implements ReversiPlayer, ReversiObserver, Runnable {
                 Point move = ai.getMove();
 
                 if (move == null) {
+                    System.out.println("AI passed.");
                     pass();
                 } else {
                     try {
@@ -107,6 +110,7 @@ public class AIPlayer implements ReversiPlayer, ReversiObserver, Runnable {
 
                 if (ai.isGameOver()) {
                     Platform.runLater(() -> ReversiPlayer.updateIndicatorWithGameResults(ai, gui));
+                    System.out.println(ai.board);
                     return;
                 }
 
@@ -117,7 +121,7 @@ public class AIPlayer implements ReversiPlayer, ReversiObserver, Runnable {
                 Platform.runLater(() -> gui.updateIndicatorLabel(opponentText.substring(0, 1) +
                         opponentText.substring(1).toLowerCase() + "'s Turn"));
 
-                this.color = OPPONENT_COLOR;
+                this.currentColor = OPPONENT_COLOR;
                 this.isMyTurn = false;
 
             }
@@ -138,9 +142,9 @@ public class AIPlayer implements ReversiPlayer, ReversiObserver, Runnable {
     public void handle(ReversiEvent re) {
         int row = re.getRow();
         int col = re.getCol();
-        PieceColor color = re.getColor();
+        PieceColor eventColor = re.getColor();
 
-        Platform.runLater(() -> gui.updateBoard(row, col, color));
+        Platform.runLater(() -> gui.updateBoard(row, col, eventColor));
     }
 
     @Override
@@ -154,22 +158,23 @@ public class AIPlayer implements ReversiPlayer, ReversiObserver, Runnable {
             return;
         }
 
-        gui.updateIndicatorLabel("The AI is deciding its move.");
-        gui.updateScore(ai.getBlackScore(), ai.getWhiteScore());
-
         synchronized (gui) {
-            gui.removeOldMovesFromDisplay();
-            gui.notify();
-        }
+            gui.updateIndicatorLabel("The AI is deciding its move.");
+            gui.updateScore(ai.getBlackScore(), ai.getWhiteScore());
 
-        this.color = MY_COLOR;
-        this.isMyTurn = true;
+            gui.removeOldMovesFromDisplay();
+
+            gui.notify();
+
+            this.currentColor = MY_COLOR;
+            this.isMyTurn = true;
+        }
 
     }
 
     @Override
     public String getColor() {
-        return this.color.toString();
+        return this.currentColor.toString();
     }
 
     @Override

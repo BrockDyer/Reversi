@@ -346,14 +346,14 @@ public class ReversiBoard implements ReversiSubscriber {
     public String toString() {
 
         StringBuilder sb = new StringBuilder();
-        for (ReversiPiece[] row : board) {
+        for (int i = 0; i < board.length; i++) {
 
-            for (ReversiPiece piece : row) {
+            for (int j = 0; j < board[i].length; j++) {
                 sb.append("|");
-                if (piece == null) {
+                if (board[j][i] == null) {
                     sb.append(" ");
                 } else {
-                    sb.append(piece.toString());
+                    sb.append(board[j][i].toString());
                 }
             }
 
