@@ -12,6 +12,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -140,8 +141,14 @@ public class ReversiClient implements ReversiPlayer, Runnable {
 
         while (sentinel) {
 
-
-            String fromServer = coms.receiveMessage();
+            String fromServer;
+            try {
+                fromServer = coms.receiveMessage();
+            } catch (NoSuchElementException nsee){
+                System.out.println("Server closed connection.");
+                sentinel = false;
+                break;
+            }
             String[] tokens = fromServer.split(" ");
 
             //System.out.println(fromServer);
@@ -196,10 +203,16 @@ public class ReversiClient implements ReversiPlayer, Runnable {
                         break;
                     }
 
-                    int black = Integer.parseInt(tokens[1]);
-                    int white = Integer.parseInt(tokens[2]);
+                    try {
+                        int black = Integer.parseInt(tokens[1]);
+                        int white = Integer.parseInt(tokens[2]);
 
-                    Platform.runLater(() -> gui.updateScore(black, white));
+                        Platform.runLater(() -> gui.updateScore(black, white));
+
+                    } catch (NumberFormatException nfe){
+                        System.err.println("Server sent bad packet! Closing connection...");
+                        sentinel = false;
+                    }
 
                     break;
 
@@ -207,24 +220,29 @@ public class ReversiClient implements ReversiPlayer, Runnable {
 
                     if (tokens.length == 4) {
 
-                        int row = Integer.parseInt(tokens[1]);
-                        int col = Integer.parseInt(tokens[2]);
-                        String pieceColor = tokens[3];
-                        PieceColor color;
-                        if (pieceColor.equals("BLACK")) {
-                            color = PieceColor.BLACK;
-                        } else if (pieceColor.equals("WHITE")) {
-                            color = PieceColor.WHITE;
-                        } else {
-                            System.err.println("Server sent invalid color! Closing connection...");
+                        try {
+                            int row = Integer.parseInt(tokens[1]);
+                            int col = Integer.parseInt(tokens[2]);
+                            String pieceColor = tokens[3];
+                            PieceColor color;
+                            if (pieceColor.equals("BLACK")) {
+                                color = PieceColor.BLACK;
+                            } else if (pieceColor.equals("WHITE")) {
+                                color = PieceColor.WHITE;
+                            } else {
+                                System.err.println("Server sent invalid color! Closing connection...");
+                                sentinel = false;
+                                break;
+                            }
+
+                            gui.updateBoard(row, col, color);
+
+                            if (color == myColor) {
+                                isMyTurn = false;
+                            }
+                        } catch (NumberFormatException nfe){
+                            System.err.println("Server sent bad packet!");
                             sentinel = false;
-                            break;
-                        }
-
-                        gui.updateBoard(row, col, color);
-
-                        if (color == myColor) {
-                            isMyTurn = false;
                         }
 
                     } else {
