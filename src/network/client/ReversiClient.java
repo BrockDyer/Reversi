@@ -80,6 +80,11 @@ public class ReversiClient implements ReversiPlayer, Runnable {
     }
 
     @Override
+    public String getColor() {
+        return myColor.toString();
+    }
+
+    @Override
     public void pass() {
         if (isMyTurn) {
             coms.sendMessage(ReversiProtocol.PASS);
@@ -190,9 +195,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
                         break;
                     }
                     this.isMyTurn = true;
-                    String text = myColor.toString();
-                    Platform.runLater(() -> gui.updateIndicatorLabel(text.substring(0, 1) +
-                            text.substring(1).toLowerCase() + "'s Turn"));
+                    Platform.runLater(() -> gui.updateIndicatorLabel("Your turn"));
 
                     readMoveSet(tokens);
                     Platform.runLater(gui::showAvailableMoves);

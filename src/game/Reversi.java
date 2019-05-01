@@ -26,11 +26,17 @@ public class Reversi implements ReversiPlayer, ReversiObserver {
     private final ReversiGUI gui;
 
     /**
+     * The color of the current player.
+     */
+    private PieceColor color;
+
+    /**
      * Start the game locally.
      */
     public Reversi(ReversiGUI gui) {
         this.gui = gui;
         this.game = new ReversiGame();
+        this.color = PieceColor.BLACK;
         this.game.registerPlayerWithBoard(this);
     }
 
@@ -47,6 +53,8 @@ public class Reversi implements ReversiPlayer, ReversiObserver {
     public void makeMove(int row, int col) throws MoveException {
         game.makeMove(row, col);
 
+        this.color = color == PieceColor.BLACK ? PieceColor.WHITE : PieceColor.BLACK;
+
         gui.updateScore(game.getBlackScore(), game.getWhiteScore());
 
         // Game win checking here.
@@ -62,6 +70,11 @@ public class Reversi implements ReversiPlayer, ReversiObserver {
                 "'s Turn");
 
         gui.showAvailableMoves();
+    }
+
+    @Override
+    public String getColor() {
+        return color.toString();
     }
 
     @Override

@@ -23,6 +23,13 @@ public interface ReversiPlayer {
     void makeMove(int row, int col) throws MoveException;
 
     /**
+     * Get the player's color.
+     *
+     * @return the string representation of the player's color.
+     */
+    String getColor();
+
+    /**
      * Get a list of the location of every move this player has.
      *
      * @return the list of all possible move locations for this player.

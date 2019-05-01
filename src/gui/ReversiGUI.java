@@ -49,9 +49,13 @@ public class ReversiGUI extends Application {
      */
     private final String WHITE = "media/white.png";
     /**
-     * The path to the possible move overlay image.
+     * The path to black's possible move overlay image.
      */
-    private final String MOVE_OVERLAY = "media/highlight.png";
+    private final String BLACK_MOVE_OVERLAY = "media/black_highlight.png";
+    /**
+     * The path to white's possible move overlay image.
+     */
+    private final String WHITE_MOVE_OVERLAY = "media/white_highlight.png";
     /**
      * The path to the blank overlay image.
      */
@@ -305,7 +309,8 @@ public class ReversiGUI extends Application {
     public void showAvailableMoves(){
         Set<Point> moveSet = this.player.getMoves();
 
-        iterateMoveSet(moveSet, MOVE_OVERLAY);
+        String color = player.getColor().equals("BLACK") ? BLACK_MOVE_OVERLAY : WHITE_MOVE_OVERLAY;
+        iterateMoveSet(moveSet, color);
 
         this.lastMoveSet = moveSet;
     }
