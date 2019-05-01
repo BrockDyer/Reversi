@@ -1,7 +1,7 @@
 package network.server;
 
-import game.PieceColor;
-import game.ReversiGame;
+import game.core.PieceColor;
+import game.core.ReversiGame;
 import game.observer.ReversiObserver;
 import gui.events.ReversiEvent;
 import network.Duplexer;

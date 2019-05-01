@@ -1,4 +1,4 @@
-package game;
+package game.core;
 
 import game.observer.ReversiObserver;
 import game.observer.ReversiSubscriber;

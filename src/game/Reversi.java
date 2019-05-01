@@ -1,5 +1,7 @@
 package game;
 
+import game.core.PieceColor;
+import game.core.ReversiGame;
 import game.observer.ReversiObserver;
 import gui.ReversiGUI;
 import gui.events.ReversiEvent;

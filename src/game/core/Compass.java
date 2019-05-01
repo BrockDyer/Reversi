@@ -1,4 +1,4 @@
-package game;
+package game.core;
 
 /**
  * Represent the 8 compass directions.

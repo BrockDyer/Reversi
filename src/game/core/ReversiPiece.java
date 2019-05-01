@@ -1,4 +1,4 @@
-package game;
+package game.core;
 
 /**
  * A piece on the reversi

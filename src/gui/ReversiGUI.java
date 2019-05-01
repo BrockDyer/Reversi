@@ -1,6 +1,6 @@
 package gui;
 
-import game.PieceColor;
+import game.core.PieceColor;
 import game.Reversi;
 import game.ReversiPlayer;
 import javafx.application.Application;

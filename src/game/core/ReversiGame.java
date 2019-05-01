@@ -1,4 +1,4 @@
-package game;
+package game.core;
 
 import game.observer.ReversiObserver;
 import util.MoveException;
@@ -42,6 +42,13 @@ public class ReversiGame {
     public ReversiGame() {
         this.board = new ReversiBoard();
         this.gameOver = false;
+    }
+
+    /**
+     * Get the board being played on.
+     */
+    protected ReversiBoard getBoard(){
+        return this.board;
     }
 
     /**

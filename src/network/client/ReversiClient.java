@@ -1,6 +1,6 @@
 package network.client;
 
-import game.PieceColor;
+import game.core.PieceColor;
 import game.ReversiPlayer;
 import gui.ReversiGUI;
 import javafx.application.Platform;
