@@ -137,6 +137,9 @@ public class ReversiServer implements ReversiObserver, Runnable {
                                 currentPlayer.sendMessage(ReversiProtocol.GAME_TIED);
                                 otherPlayer.sendMessage(ReversiProtocol.GAME_TIED);
                             }
+
+                            sentinel = false;
+
                         }
 
                         changeTurn();
