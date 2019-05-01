@@ -1,5 +1,7 @@
 package game;
 
+import game.core.ReversiGame;
+import gui.ReversiGUI;
 import util.MoveException;
 
 import java.awt.*;
@@ -12,6 +14,12 @@ import java.util.Set;
  * @author Brock Dyer.
  */
 public interface ReversiPlayer {
+
+
+    static void updateIndicatorWithGameResults(ReversiGame game, ReversiGUI gui){
+        String winner = game.getWinner();
+        gui.updateIndicatorLabel(winner);
+    }
 
     /**
      * Make a move.

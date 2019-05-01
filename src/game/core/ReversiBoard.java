@@ -194,7 +194,7 @@ public class ReversiBoard implements ReversiSubscriber {
      * @param col the column the move is being made in.
      * @return an array list of pieces that should be flipped if a piece is played in the given row and col.
      */
-    private List<Map<ReversiPiece, int[]>> findOpponentsToFlip(int row, int col) {
+    public List<Map<ReversiPiece, int[]>> findOpponentsToFlip(int row, int col) {
 
         List<Map<ReversiPiece, int[]>> toFlip = new ArrayList<>();
         Map<ReversiPiece, int[]> flippable;

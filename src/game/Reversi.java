@@ -34,6 +34,7 @@ public class Reversi implements ReversiPlayer, ReversiObserver {
 
     /**
      * Start the game locally.
+     * @param gui the gui that is displaying the game.
      */
     public Reversi(ReversiGUI gui) {
         this.gui = gui;
@@ -61,8 +62,7 @@ public class Reversi implements ReversiPlayer, ReversiObserver {
 
         // Game win checking here.
         if(game.isGameOver()){
-            String winner = game.getWinner();
-            gui.updateIndicatorLabel(winner);
+            ReversiPlayer.updateIndicatorWithGameResults(game, gui);
             return;
         }
 

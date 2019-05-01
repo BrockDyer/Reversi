@@ -1,8 +1,11 @@
 package ai;
 
+import game.core.ReversiBoard;
 import game.core.ReversiGame;
 
 import java.awt.*;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -12,12 +15,6 @@ import java.awt.*;
  */
 public abstract class ReversiAI extends ReversiGame {
 
-    private final ReversiGame game;
-
-    public ReversiAI(ReversiGame game) {
-        this.game = game;
-    }
-
     /**
      * Get the move, as a point, that the ai will make.
      *
@@ -26,21 +23,27 @@ public abstract class ReversiAI extends ReversiGame {
     public abstract Point getMove();
 
     /**
-     * Get the move by the ai that will flip the most opponent pieces. The move is represented by a point containing the
+     * Get the moves by the ai that will flip the most opponent pieces. The moves are represented by a point containing the
      * row and column of the move.
      *
-     * @return the point of the move that flips the most opponent pieces.
+     * @return the set of points of the moves that flip the most opponent pieces.
      */
-    protected Point getMyMoveWithMostFlips(){
+    protected Set<Point> getMyMovesWithMostFlips(){
 
-        Point mostFlipsMove = null;
+        Set<Point> mostFlipsMoves = new HashSet<>();
         int maxFlips = -1;
 
-        for(Point p : super.getPossibleMoves()){
+        ReversiBoard board = super.getBoard();
 
+        for(Point p : super.getPossibleMoves()){
+            int numFlips = board.findOpponentsToFlip(p.x, p.y).size();
+
+            if(numFlips > maxFlips){
+                mostFlipsMoves.add(p);
+            }
         }
 
-        return mostFlipsMove;
+        return mostFlipsMoves;
 
     }
 

@@ -1,5 +1,7 @@
 package gui;
 
+import ai.AIPlayer;
+import ai.BasicAI;
 import game.core.PieceColor;
 import game.Reversi;
 import game.ReversiPlayer;
@@ -156,7 +158,14 @@ public class ReversiGUI extends Application {
             t.start();
 
         } else if (gameType.equals("ai")) {
-            // Setup ai here.
+            this.player = new AIPlayer(this, new BasicAI());
+
+            Thread t = new Thread((AIPlayer)player);
+            t.setDaemon(true);
+            t.start();
+
+            updateIndicatorLabel("Black's Turn");
+            showAvailableMoves();
 
         } else {
             this.player = new Reversi(this);
@@ -231,7 +240,13 @@ public class ReversiGUI extends Application {
 
             } catch (MoveException me) {
                 System.out.println(me.getMessage());
-                showAvailableMoves();
+                if(player instanceof AIPlayer){
+                    if(((AIPlayer)player).isHumanTurn()){
+                        showAvailableMoves();
+                    }
+                } else {
+                    showAvailableMoves();
+                }
             }
         }
     }
@@ -315,7 +330,13 @@ public class ReversiGUI extends Application {
         this.lastMoveSet = moveSet;
     }
 
-
+    /**
+     * Loop through the move set and set the image of the button at the location of each point in the set to the
+     * specified image.
+     *
+     * @param moveSet the set of moves.
+     * @param imageOverlay the image to overlay.
+     */
     private void iterateMoveSet(Set<Point> moveSet, String imageOverlay){
         for (Point loc : moveSet) {
 
@@ -326,4 +347,13 @@ public class ReversiGUI extends Application {
             updateImage(b, imageOverlay);
         }
     }
+
+    /**
+     * Removes the overlays for the last set of available moves from the display.
+     */
+    public void removeOldMovesFromDisplay(){
+        iterateMoveSet(lastMoveSet, BLANK_OVERLAY);
+    }
+
+
 }
