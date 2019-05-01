@@ -159,11 +159,6 @@ public class ReversiGUI extends Application {
 
         } else if (gameType.equals("ai")) {
             this.player = new AIPlayer(this, new BasicAI());
-
-            Thread t = new Thread((AIPlayer)player);
-            t.setDaemon(true);
-            t.start();
-
             updateIndicatorLabel("Black's Turn");
             showAvailableMoves();
 

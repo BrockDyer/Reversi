@@ -16,7 +16,7 @@ import java.util.Set;
  *
  * @author Brock Dyer.
  */
-public class AIPlayer implements ReversiPlayer, ReversiObserver, Runnable {
+public class AIPlayer implements ReversiPlayer, ReversiObserver {
 
     private final int MOVE_DELAY = 1000;
 
@@ -51,11 +51,6 @@ public class AIPlayer implements ReversiPlayer, ReversiObserver, Runnable {
     private boolean isMyTurn;
 
     /**
-     * A flag to determine if the ai should continue running.
-     */
-    private boolean sentinel;
-
-    /**
      * Create the ai player with the specified ai.
      *
      * @param ai the ai this player will use to decide where it moves.
@@ -67,66 +62,9 @@ public class AIPlayer implements ReversiPlayer, ReversiObserver, Runnable {
         this.gui = gui;
         this.ai = ai;
         this.isMyTurn = false;
-        this.sentinel = true;
 
         this.currentColor = PieceColor.BLACK;
         this.ai.registerPlayerWithBoard(this);
-    }
-
-    @Override
-    public void run() {
-
-        while (sentinel) {
-
-            synchronized (gui) {
-
-                while (!isMyTurn) {
-                    try {
-                        gui.wait();
-                    } catch (InterruptedException ie) {
-                        ie.printStackTrace();
-                    }
-                }
-
-                try {
-                    Thread.sleep(MOVE_DELAY);
-                } catch (InterruptedException ie){
-                    ie.printStackTrace();
-                }
-
-                Point move = ai.getMove();
-
-                if (move == null) {
-                    System.out.println("AI passed.");
-                    pass();
-                } else {
-                    try {
-                        ai.makeMove(move.x, move.y);
-                    } catch (MoveException me){
-                        System.err.println("AI tried to make an invalid move! This is an error. Terminating ai");
-                        sentinel = false;
-                    }
-                }
-
-                if (ai.isGameOver()) {
-                    Platform.runLater(() -> ReversiPlayer.updateIndicatorWithGameResults(ai, gui));
-                    System.out.println(ai.board);
-                    return;
-                }
-
-                Platform.runLater(() -> gui.updateScore(ai.getBlackScore(), ai.getWhiteScore()));
-                Platform.runLater(gui::showAvailableMoves);
-
-                String opponentText = OPPONENT_COLOR.toString();
-                Platform.runLater(() -> gui.updateIndicatorLabel(opponentText.substring(0, 1) +
-                        opponentText.substring(1).toLowerCase() + "'s Turn"));
-
-                this.currentColor = OPPONENT_COLOR;
-                this.isMyTurn = false;
-
-            }
-        }
-
     }
 
     /**
@@ -134,7 +72,7 @@ public class AIPlayer implements ReversiPlayer, ReversiObserver, Runnable {
      *
      * @return true if is the human's turn.
      */
-    public boolean isHumanTurn(){
+    public boolean isHumanTurn() {
         return !isMyTurn;
     }
 
@@ -149,26 +87,57 @@ public class AIPlayer implements ReversiPlayer, ReversiObserver, Runnable {
 
     @Override
     public void makeMove(int row, int col) throws MoveException {
+
+        //-------------- Handle the other player's move. ----------------------\\
+
         ai.makeMove(row, col);
+
+        this.currentColor = MY_COLOR;
+        this.isMyTurn = true;
+
+        gui.updateScore(ai.getBlackScore(), ai.getWhiteScore());
 
         // Game win checking.
         if (ai.isGameOver()) {
+            System.out.println("Game over. Person Move");
             ReversiPlayer.updateIndicatorWithGameResults(ai, gui);
-            sentinel = false;
             return;
         }
 
-        synchronized (gui) {
-            gui.updateIndicatorLabel("The AI is deciding its move.");
-            gui.updateScore(ai.getBlackScore(), ai.getWhiteScore());
+        gui.updateIndicatorLabel("The AI is deciding its move.");
 
-            gui.removeOldMovesFromDisplay();
+        gui.removeOldMovesFromDisplay();
 
-            gui.notify();
+        //------------------ The ai move -------------------------------------\\
 
-            this.currentColor = MY_COLOR;
-            this.isMyTurn = true;
-        }
+//        Point move = ai.getMove();
+//
+//        if (move == null) {
+//            System.out.println("AI passed.");
+//            pass();
+//        } else {
+//            try {
+//                ai.makeMove(move.x, move.y);
+//            } catch (MoveException me) {
+//                System.err.println("AI tried to make an invalid move!");
+//            }
+//        }
+//
+//        if (ai.isGameOver()) {
+//            System.out.println("Game Over, ai move");
+//            ReversiPlayer.updateIndicatorWithGameResults(ai, gui);
+//            return;
+//        }
+//
+//        this.currentColor = OPPONENT_COLOR;
+//        this.isMyTurn = false;
+//
+//        gui.updateScore(ai.getBlackScore(), ai.getWhiteScore());
+//        gui.showAvailableMoves();
+//
+//        String opponentText = OPPONENT_COLOR.toString();
+//        gui.updateIndicatorLabel(opponentText.substring(0, 1) +
+//                opponentText.substring(1).toLowerCase() + "'s Turn");
 
     }
 
@@ -184,6 +153,7 @@ public class AIPlayer implements ReversiPlayer, ReversiObserver, Runnable {
 
     @Override
     public void pass() {
+        this.isMyTurn = false;
         ai.pass();
     }
 
