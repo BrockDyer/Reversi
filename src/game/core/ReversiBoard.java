@@ -4,6 +4,7 @@ import game.observer.ReversiObserver;
 import game.observer.ReversiSubscriber;
 import gui.events.ReversiEvent;
 import util.MoveException;
+import util.Utils;
 
 import java.awt.*;
 import java.util.*;
@@ -147,7 +148,8 @@ public class ReversiBoard implements ReversiSubscriber {
 
             if (piece == null) {
 
-                List<Map<ReversiPiece, int[]>> toFlip = findOpponentsToFlip(row, col);
+                List<Map<ReversiPiece, int[]>> toFlip = Utils.findOpponentsToFlip
+                        (row, col, this.board, this.currentPlayer);
 
                 if (toFlip.size() == 0) {
                     throw new MoveException("Invalid move by " + currentPlayer +
@@ -186,161 +188,6 @@ public class ReversiBoard implements ReversiSubscriber {
 
     }
 
-
-    /**
-     * Find the pieces that will be flipped if a move is played in the specified row and column.
-     *
-     * @param row the row the move is being made in.
-     * @param col the column the move is being made in.
-     * @return an array list of pieces that should be flipped if a piece is played in the given row and col.
-     */
-    public List<Map<ReversiPiece, int[]>> findOpponentsToFlip(int row, int col) {
-
-        List<Map<ReversiPiece, int[]>> toFlip = new ArrayList<>();
-        Map<ReversiPiece, int[]> flippable;
-
-        for (Compass dir : Compass.values()) {
-
-            flippable = searchDirection(row, col, dir);
-            if (flippable.keySet().size() > 0) {
-                toFlip.add(flippable);
-            }
-
-        }
-
-        return toFlip;
-    }
-
-    /**
-     * Find all the pieces that can be flipped in one direction from the starting move.
-     *
-     * @param row the row of the move.
-     * @param col the column of the move.
-     * @param dir the compass direction to check in.
-     * @return a list of pieces in that direction that should be flipped. An empty list if there are none.
-     */
-    private Map<ReversiPiece, int[]> searchDirection(int row, int col, Compass dir) {
-
-        Map<ReversiPiece, int[]> toFlip = new HashMap<>();
-
-        while ((row += dir.getX()) < 8 && row >= 0 && (col += dir.getY()) < 8 && col >= 0) {
-
-            ReversiPiece dPiece = board[row][col];
-            if (dPiece != null) {
-
-                if (dPiece.getColor() != currentPlayer) {
-                    toFlip.put(dPiece, new int[]{row, col});
-                } else {
-
-                    if (toFlip.size() != 0) {
-                        return toFlip;
-                    } else {
-                        toFlip.clear();
-                        return toFlip;
-                    }
-
-                }
-            } else {
-
-                toFlip.clear();
-                return toFlip;
-
-            }
-
-        }
-
-        toFlip.clear();
-        return toFlip;
-    }
-
-    /**
-     * Get a set of the locations of all possible moves the current player can make.
-     *
-     * @return a set of integer arrays containing the row and col of a possible move. Empty set if no moves are
-     * possible for the current player.
-     */
-    public Set<Point> getPossibleMoves() {
-        Set<Point> possibleMoves = new HashSet<>();
-
-        for (int r = 0; r < board.length; r++) {
-
-            ReversiPiece[] row = board[r];
-
-            for (int c = 0; c < row.length; c++) {
-
-                if (row[c] != null) {
-                    possibleMoves.addAll(findMovesFromPiece(r, c));
-                }
-
-            }
-        }
-
-        return possibleMoves;
-    }
-
-    /**
-     * Find all possible moves for the current player from a given piece. Assumes the given location contains a piece.
-     *
-     * @param row the row of the piece to check.
-     * @param col the column of the piece to check.
-     * @return a set of the locations of all possible moves for the current player from the piece at the specified
-     * location.
-     */
-    private Set<Point> findMovesFromPiece(int row, int col) {
-
-        Set<Point> possibleMoves = new HashSet<>();
-
-        // Return if the piece here is not the current player's color.
-        if (board[row][col].getColor() != currentPlayer) {
-            return possibleMoves;
-        }
-
-        for (Compass dir : Compass.values()) {
-            Point moveLoc = searchMoveDir(row, col, dir);
-            if (moveLoc != null) {
-                possibleMoves.add(moveLoc);
-            }
-        }
-
-        return possibleMoves;
-
-    }
-
-    /**
-     * Search outward in all directions from the location given to find a possible location the current player
-     * could move. Assumes that the piece at the location specified is the current player's color and is not empty.
-     *
-     * @param row the row to start at.
-     * @param col the column to start at.
-     * @param dir the direction to search in.
-     * @return an point containing the row and col of the possible move.
-     */
-    private Point searchMoveDir(int row, int col, Compass dir) {
-
-        int couldFlip = 0;
-
-        while ((row += dir.getX()) < 8 && row >= 0 && (col += dir.getY()) < 8 && col >= 0) {
-
-            ReversiPiece dPiece = board[row][col];
-
-            if (dPiece == null) {
-                if (couldFlip != 0) {
-                    return new Point(row, col);
-                } else {
-                    return null;
-                }
-            }
-
-            if (dPiece.getColor() == currentPlayer) {
-                return null;
-            }
-
-            couldFlip++;
-
-        }
-
-        return null;
-    }
 
     @Override
     public String toString() {
@@ -381,6 +228,21 @@ public class ReversiBoard implements ReversiSubscriber {
      */
     public int getNumBlack() {
         return numBlack;
+    }
+
+    /**
+     * Create and get a copy of the underlying array of the board.
+     *
+     * @return a copy of the board's underlying array.
+     */
+    public ReversiPiece[][] getCopyOfBoard(){
+
+        ReversiPiece[][] boardCopy = new ReversiPiece[board.length][];
+        for(int i = 0; i < board.length; i++) {
+            boardCopy[i] = board[i].clone();
+        }
+
+        return boardCopy;
     }
 
 }
