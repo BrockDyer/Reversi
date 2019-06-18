@@ -36,6 +36,11 @@ import java.util.Set;
 public class ReversiGUI extends Application {
 
     /**
+     * The default port to use when using the network protocol.
+     */
+    private static final int DEFAULT_PORT = 12345;
+
+    /**
      * The path to the empty square image.
      */
     private final String EMPTY = "media/tile.png";
@@ -156,9 +161,13 @@ public class ReversiGUI extends Application {
             t.start();
 
         } else if (gameType.equals("ai")) {
-            //this.player = new AIPlayer(this, new BasicAI());
-            updateIndicatorLabel("Black's Turn");
-            showAvailableMoves();
+
+            // Create AI player
+
+            // Create the client
+
+            // Create and start the reversi client thread
+
 
         } else {
             this.player = new Reversi(this);

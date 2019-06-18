@@ -7,6 +7,7 @@ import javafx.application.Platform;
 import network.Duplexer;
 import network.ReversiProtocol;
 import util.MoveException;
+import util.Utils;
 
 import java.awt.*;
 import java.io.IOException;
@@ -124,23 +125,6 @@ public class ReversiClient implements ReversiPlayer, Runnable {
         coms.sendMessage(ReversiProtocol.QUIT);
     }
 
-    /**
-     * Read this player's available moves from the string tokens received from the server.
-     *
-     * @param tokens an array of strings representing the individual data sent to the client.
-     */
-    private void readMoveSet(String[] tokens){
-
-        this.moveSet.clear();
-
-        for(int i = 1; i < tokens.length; i += 2){
-            int row = Integer.parseInt(tokens[i]);
-            int col = Integer.parseInt(tokens[i + 1]);
-            this.moveSet.add(new Point(row, col));
-        }
-
-    }
-
     @Override
     public void run() {
 
@@ -197,7 +181,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
                     this.isMyTurn = true;
                     Platform.runLater(() -> gui.updateIndicatorLabel("Your turn"));
 
-                    readMoveSet(tokens);
+                    Utils.readMoveSet(tokens, this.moveSet);
                     Platform.runLater(gui::showAvailableMoves);
                     break;
 
