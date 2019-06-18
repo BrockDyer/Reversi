@@ -1,7 +1,5 @@
 package gui;
 
-import ai.AIPlayer;
-import ai.BasicAI;
 import game.core.PieceColor;
 import game.Reversi;
 import game.ReversiPlayer;
@@ -158,7 +156,7 @@ public class ReversiGUI extends Application {
             t.start();
 
         } else if (gameType.equals("ai")) {
-            this.player = new AIPlayer(this, new BasicAI());
+            //this.player = new AIPlayer(this, new BasicAI());
             updateIndicatorLabel("Black's Turn");
             showAvailableMoves();
 
@@ -235,13 +233,6 @@ public class ReversiGUI extends Application {
 
             } catch (MoveException me) {
                 System.out.println(me.getMessage());
-                if(player instanceof AIPlayer){
-                    if(((AIPlayer)player).isHumanTurn()){
-                        showAvailableMoves();
-                    }
-                } else {
-                    showAvailableMoves();
-                }
             }
         }
     }
