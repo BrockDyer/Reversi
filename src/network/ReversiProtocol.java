@@ -29,7 +29,7 @@ public interface ReversiProtocol {
     /**
      * Server to client.<br>
      * Sends a move update to both clients.
-     * Usage: MOVE_MADE #black #white
+     * Usage: MOVE_MADE #black #white #x #y
      */
     String MOVE_MADE = "MOVE_MADE";
     /**

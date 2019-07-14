@@ -1,7 +1,10 @@
 package ai;
 
+import ai.difficulties.EasyAI;
+import ai.difficulties.RandomAI;
 import game.ReversiPlayer;
 import game.core.PieceColor;
+import game.core.ReversiBoard;
 import javafx.application.Platform;
 import network.Duplexer;
 import network.ReversiProtocol;
@@ -47,11 +50,17 @@ public class AIPlayer implements ReversiPlayer, Runnable {
      */
     private Set<Point> moveSet;
 
+    /**
+     * The ai used to determine the computer's next move.
+     */
+    private ReversiAI ai;
+
     public AIPlayer(Socket socket) throws IOException {
         this.duplexer = new Duplexer(socket);
         this.isMyTurn = false;
         this.sentinel = true;
         this.moveSet = new HashSet<>();
+        this.ai = new RandomAI(true);
         System.out.println("Constructed AI.");
     }
 
@@ -154,6 +163,7 @@ public class AIPlayer implements ReversiPlayer, Runnable {
                     boolean tryMove = true;
                     while(tryMove) {
                         try {
+
                             // Determine AI move here.
 
 
@@ -171,31 +181,48 @@ public class AIPlayer implements ReversiPlayer, Runnable {
 
                 case ReversiProtocol.PIECE_UPDATE:
 
-                    // Update the AI's copy of the board, a piece is being flipped.
+                    // Do nothing here, the ai keeps a copy of the board and makes the received and sent moves on it as
+                    // the game is played.
 
                     break;
 
                 case ReversiProtocol.MOVE_MADE:
 
-                    // Update the AI's copy of the board, a move was made.
+                    // Verify message.
+                    if(tokens.length == 5) {
+
+                        // Update the AI's copy of the board, a move was made.
+                        int row = Integer.parseInt(tokens[3]), col = Integer.parseInt(tokens[4]);
+                        ai.copyMove(new Point(row, col));
+
+                    } else {
+
+                        // Something went wrong.
+                        System.out.println("AI received bad move update from server.");
+                        sentinel = false;
+                        break;
+                    }
 
                     break;
 
                 case ReversiProtocol.GAME_WON:
 
                     // The ai has won the game.
+                    System.out.println("AI has beaten the player.");
 
                     break;
 
                 case ReversiProtocol.GAME_TIED:
 
                     // A draw has occurred.
+                    System.out.println("The game has ended in a draw.");
 
                     break;
 
                 case ReversiProtocol.GAME_LOST:
 
                     // The ai has lost the game.
+                    System.out.println("The player has beaten the AI.");
 
                     break;
 

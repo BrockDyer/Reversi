@@ -1,6 +1,7 @@
 package ai;
 
 import game.core.ReversiBoard;
+import util.MoveException;
 
 import java.awt.*;
 import java.util.Set;
@@ -22,7 +23,7 @@ public abstract class ReversiAI {
      *
      * @param board a copy of the game board.
      */
-    protected ReversiAI(ReversiBoard board){
+    protected ReversiAI(ReversiBoard board) {
         this.board = board;
     }
 
@@ -39,7 +40,19 @@ public abstract class ReversiAI {
      *
      * @return the ai copy of the board.
      */
-    protected ReversiBoard getBoard(){
+    protected ReversiBoard getBoard() {
         return this.board;
+    }
+
+    /**
+     * Copies the move made by either player to the ai's copy of the board.
+     * @param move
+     */
+    public void copyMove(Point move) {
+        try {
+            this.board.move(move.x, move.y);
+        } catch (MoveException me) {
+            System.out.println(me.getMessage());
+        }
     }
 }

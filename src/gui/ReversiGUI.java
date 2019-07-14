@@ -157,23 +157,32 @@ public class ReversiGUI extends Application {
             this.player = new ReversiClient(socket, this);
 
             Thread t = new Thread((ReversiClient) this.player);
-            t.setDaemon(true);
-            t.start();
+            daemonize(t);
 
         } else if (gameType.equals("ai")) {
 
-            // Create AI player
+            // Create the server
+
+            // Create AI duplexer
+
 
             // Create the client
+            Socket socket = new Socket("localhost", 12345);
+            this.player = new ReversiClient(socket, this);
 
-            // Create and start the reversi client thread
-
+            Thread client = new Thread((ReversiClient) this.player);
+            daemonize(client);
 
         } else {
             this.player = new Reversi(this);
             updateIndicatorLabel("Black's Turn");
             showAvailableMoves();
         }
+    }
+
+    private void daemonize(Thread t){
+        t.setDaemon(true);
+        t.start();
     }
 
     @Override

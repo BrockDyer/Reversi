@@ -187,7 +187,7 @@ public class ReversiClient implements ReversiPlayer, Runnable {
 
                 case ReversiProtocol.MOVE_MADE:
 
-                    if (tokens.length != 3) {
+                    if (tokens.length != 5) {
                         System.err.println("Server sent bad request! Closing connection...");
                         Platform.runLater(() -> gui.updateIndicatorLabel("Connection closed!"));
                         sentinel = false;

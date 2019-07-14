@@ -118,9 +118,9 @@ public class ReversiServer implements ReversiObserver, Runnable {
                         game.makeMove(row, col);
 
                         currentPlayer.sendMessage(ReversiProtocol.MOVE_MADE + " " + game.getBlackScore() +
-                                " " + game.getWhiteScore());
+                                " " + game.getWhiteScore() + " " + row + " " + col);
                         otherPlayer.sendMessage(ReversiProtocol.MOVE_MADE + " " + game.getBlackScore() +
-                                " " + game.getWhiteScore());
+                                " " + game.getWhiteScore() + " " + row + " " + col);
 
                         // Do game end condition checking.
                         if(game.isGameOver()){
