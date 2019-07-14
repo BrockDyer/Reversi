@@ -242,6 +242,7 @@ public class ReversiGUI extends Application {
 
             } catch (MoveException me) {
                 System.out.println(me.getMessage());
+                showAvailableMoves();
             }
         }
     }

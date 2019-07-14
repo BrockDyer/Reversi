@@ -2,6 +2,7 @@ package game.core;
 
 import game.observer.ReversiObserver;
 import util.MoveException;
+import util.Utils;
 
 import java.awt.*;
 import java.util.Set;
@@ -139,7 +140,7 @@ public class ReversiGame {
 
         board.changeTurn();
 
-        int numMoves = board.getPossibleMoves().size();
+        int numMoves = Utils.getPossibleMoves(board.getCopyOfBoard(), board.getCurrentPlayer()).size();
 
         if (numMoves == 0) {
             pass();
@@ -167,7 +168,7 @@ public class ReversiGame {
      * Empty list if no moves are possible.
      */
     public Set<Point> getPossibleMoves() {
-        return board.getPossibleMoves();
+        return Utils.getPossibleMoves(board.getCopyOfBoard(), board.getCurrentPlayer());
     }
 
     /**
