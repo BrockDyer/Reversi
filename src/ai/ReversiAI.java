@@ -25,6 +25,7 @@ public abstract class ReversiAI {
      */
     protected ReversiAI(ReversiBoard board) {
         this.board = board;
+        this.board.reset();
     }
 
     /**
