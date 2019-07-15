@@ -15,11 +15,6 @@ import java.util.Set;
 public class RandomAI extends ReversiAI {
 
     /**
-     * A boolean flag. True if debug info should be logged to console.
-     */
-    public final boolean DEBUG;
-
-    /**
      * A random to generate a random integer.
      */
     private final Random random;
@@ -30,8 +25,7 @@ public class RandomAI extends ReversiAI {
      * @param DEBUG true if debug info should be logged to console.
      */
     public RandomAI(boolean DEBUG){
-        super(new ReversiBoard());
-        this.DEBUG = DEBUG;
+        super(new ReversiBoard(), DEBUG);
         this.random = new Random();
     }
 

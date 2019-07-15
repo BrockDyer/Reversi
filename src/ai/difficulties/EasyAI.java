@@ -13,8 +13,6 @@ import java.util.Set;
  */
 public class EasyAI extends ReversiAI {
 
-    public final boolean DEBUG;
-
     /**
      * Construct parent.
      */
@@ -29,8 +27,7 @@ public class EasyAI extends ReversiAI {
      * @param debug true if debug logs should be displayed.
      */
     public EasyAI(boolean debug){
-        super(new ReversiBoard());
-        this.DEBUG = debug;
+        super(new ReversiBoard(), debug);
     }
 
     @Override

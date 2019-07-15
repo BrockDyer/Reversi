@@ -26,6 +26,11 @@ import java.util.Set;
 public class AIPlayer implements ReversiPlayer, Runnable {
 
     /**
+     * The time in milliseconds that the ai should pause for when deciding its move.
+     */
+    private final int AI_PAUSE = 900;
+
+    /**
      * Used to communicate with the server.
      */
     private Duplexer duplexer;
@@ -60,7 +65,7 @@ public class AIPlayer implements ReversiPlayer, Runnable {
         this.isMyTurn = false;
         this.sentinel = true;
         this.moveSet = new HashSet<>();
-        this.ai = new RandomAI(true);
+        this.ai = new RandomAI(false);
         System.out.println("Constructed AI.");
     }
 
@@ -105,6 +110,27 @@ public class AIPlayer implements ReversiPlayer, Runnable {
     @Override
     public void quit() {
 
+    }
+
+    /**
+     * Prints out debug info. The moves available to the ai, and the state of the board.
+     * This is a helper method to be called during the make_move request before the move is made.
+     */
+    private void debugBoard(){
+
+        StringBuilder builder = new StringBuilder();
+        for(Point p : moveSet){
+            builder.append("(");
+            builder.append(p.x);
+            builder.append(", ");
+            builder.append(p.y);
+            builder.append("), ");
+        }
+
+        String moves = builder.toString();
+        System.out.println(moves.substring(0, moves.length() - 2));
+
+        System.out.println(ai.getBoard().toString());
     }
 
     @Override
@@ -159,13 +185,24 @@ public class AIPlayer implements ReversiPlayer, Runnable {
                     this.isMyTurn = true;
                     Utils.readMoveSet(tokens, this.moveSet);
 
-                    Point movePoint = null;
+                    // If debug info is enabled print out the board.
+                    if(ai.DEBUG) {
+                        debugBoard();
+                    }
+
+                    // Have the ai pause for a little bit.
+                    try {
+                        Thread.sleep(AI_PAUSE);
+                    } catch (InterruptedException ie){
+                        ie.printStackTrace();
+                    }
+
                     boolean tryMove = true;
                     while(tryMove) {
                         try {
 
                             // Determine AI move here.
-                            movePoint = ai.determineMove(moveSet);
+                            Point movePoint = ai.determineMove(moveSet);
 
                             makeMove(movePoint.x, movePoint.y);
 

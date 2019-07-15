@@ -18,14 +18,17 @@ public abstract class ReversiAI {
      */
     private ReversiBoard board;
 
+    public final boolean DEBUG;
+
     /**
      * Initialize the ai.
      *
      * @param board a copy of the game board.
      */
-    protected ReversiAI(ReversiBoard board) {
+    protected ReversiAI(ReversiBoard board, boolean DEBUG) {
         this.board = board;
         this.board.reset();
+        this.DEBUG = DEBUG;
     }
 
     /**
@@ -49,10 +52,12 @@ public abstract class ReversiAI {
      * Copies the move made by either player to the ai's copy of the board.
      * @param move
      */
-    public void copyMove(Point move) {
+    protected void copyMove(Point move) {
         try {
             this.board.move(move.x, move.y);
+            this.board.changeTurn();
         } catch (MoveException me) {
+            System.out.print("AI move exception: \n\t");
             System.out.println(me.getMessage());
         }
     }

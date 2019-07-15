@@ -1,9 +1,9 @@
 package gui;
 
 import ai.AIPlayer;
-import game.core.PieceColor;
 import game.Reversi;
 import game.ReversiPlayer;
+import game.core.PieceColor;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -164,12 +164,7 @@ public class ReversiGUI extends Application {
         } else if (gameType.equals("ai")) {
 
             // Create the server
-            Thread serverThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    ReversiServer.serverStart(12345);
-                }
-            });
+            Thread serverThread = new Thread(() -> ReversiServer.serverStart(12345));
 
             daemonize(serverThread);
 
@@ -193,7 +188,7 @@ public class ReversiGUI extends Application {
         }
     }
 
-    private void daemonize(Thread t){
+    private void daemonize(Thread t) {
         t.setDaemon(true);
         t.start();
     }
@@ -339,7 +334,7 @@ public class ReversiGUI extends Application {
     /**
      * Display the moves available to the player.
      */
-    public void showAvailableMoves(){
+    public void showAvailableMoves() {
         Set<Point> moveSet = this.player.getMoves();
 
         String color = player.getColor().equals("BLACK") ? BLACK_MOVE_OVERLAY : WHITE_MOVE_OVERLAY;
@@ -352,10 +347,10 @@ public class ReversiGUI extends Application {
      * Loop through the move set and set the image of the button at the location of each point in the set to the
      * specified image.
      *
-     * @param moveSet the set of moves.
+     * @param moveSet      the set of moves.
      * @param imageOverlay the image to overlay.
      */
-    private void iterateMoveSet(Set<Point> moveSet, String imageOverlay){
+    private void iterateMoveSet(Set<Point> moveSet, String imageOverlay) {
         for (Point loc : moveSet) {
 
             int row = loc.x, col = loc.y;
@@ -369,7 +364,7 @@ public class ReversiGUI extends Application {
     /**
      * Removes the overlays for the last set of available moves from the display.
      */
-    public void removeOldMovesFromDisplay(){
+    public void removeOldMovesFromDisplay() {
         iterateMoveSet(lastMoveSet, BLANK_OVERLAY);
     }
 
