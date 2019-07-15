@@ -33,13 +33,13 @@ public class AIConfiguration {
             throw new MoveException("AI tried to make a move in an occupied square.");
         }
 
-        List<Map<ReversiPiece, int[]>> toFlip = Utils.findOpponentsToFlip(move.x, move.y, boardCopy, PieceColor.BLACK);
+        List<Map<ReversiPiece, int[]>> toFlip = Utils.findOpponentsToFlip(move.x, move.y, boardCopy, PieceColor.WHITE);
 
         if (toFlip.size() == 0) {
             throw new MoveException("Invalid ai move. That move will not flip any opponent pieces.");
         }
 
-        numberFlipped = toFlip.size();
+        numberFlipped = Utils.calcPiecesFlipped(toFlip);
     }
 
     /**

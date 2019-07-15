@@ -1,11 +1,8 @@
 package ai;
 
-import ai.difficulties.EasyAI;
-import ai.difficulties.RandomAI;
+import ai.difficulties.MaxFlipAI;
 import game.ReversiPlayer;
 import game.core.PieceColor;
-import game.core.ReversiBoard;
-import javafx.application.Platform;
 import network.Duplexer;
 import network.ReversiProtocol;
 import util.MoveException;
@@ -65,7 +62,7 @@ public class AIPlayer implements ReversiPlayer, Runnable {
         this.isMyTurn = false;
         this.sentinel = true;
         this.moveSet = new HashSet<>();
-        this.ai = new RandomAI(false);
+        this.ai = new MaxFlipAI(false);
         System.out.println("Constructed AI.");
     }
 

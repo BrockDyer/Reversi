@@ -53,7 +53,26 @@ public class Utils {
 
         }
 
+        //System.out.println("\tFlipped by move (" + row + ", " + col + ") " + calcPiecesFlipped(toFlip));
         return toFlip;
+    }
+
+    /**
+     * Calculates the number of pieces that were found eligible for flipping if a move was made.
+     *
+     * @param toFlip the list of maps of pieces to their positions.
+     *
+     * @return the number of pieces to be flipped.
+     */
+    public static int calcPiecesFlipped(List<Map<ReversiPiece, int[]>> toFlip){
+
+        int pieces = 0;
+
+        for(Map<ReversiPiece, int[]> map : toFlip){
+            pieces += map.size();
+        }
+
+        return pieces;
     }
 
     /**
