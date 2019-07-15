@@ -1,5 +1,6 @@
 package gui;
 
+import ai.AIPlayer;
 import game.core.PieceColor;
 import game.Reversi;
 import game.ReversiPlayer;
@@ -19,6 +20,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import network.client.ReversiClient;
+import network.server.ReversiServer;
 import util.MoveException;
 
 import java.awt.*;
@@ -162,16 +164,27 @@ public class ReversiGUI extends Application {
         } else if (gameType.equals("ai")) {
 
             // Create the server
+            Thread serverThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    ReversiServer.serverStart(12345);
+                }
+            });
 
-            // Create AI duplexer
-
+            daemonize(serverThread);
 
             // Create the client
-            Socket socket = new Socket("localhost", 12345);
-            this.player = new ReversiClient(socket, this);
+            Socket clientSocket = new Socket("localhost", 12345);
+            this.player = new ReversiClient(clientSocket, this);
+            Thread clientThread = new Thread((ReversiClient) this.player);
 
-            Thread client = new Thread((ReversiClient) this.player);
-            daemonize(client);
+            // Create the ai
+            Socket aiSocket = new Socket("localhost", 12345);
+            Thread aiThread = new Thread(new AIPlayer(aiSocket));
+
+            // Start both threads.
+            daemonize(clientThread);
+            daemonize(aiThread);
 
         } else {
             this.player = new Reversi(this);

@@ -12,7 +12,6 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.NoSuchElementException;
-import java.util.Scanner;
 import java.util.Set;
 
 /**
@@ -74,12 +73,12 @@ public class ReversiServer implements ReversiObserver, Runnable {
      *
      * @return the formatted string representation of the set.
      */
-    private String moveSetMsg(){
+    private String moveSetMsg() {
 
         Set<Point> moveSet = game.getPossibleMoves();
 
         StringBuilder sb = new StringBuilder();
-        for(Point p : moveSet){
+        for (Point p : moveSet) {
             sb.append(" ");
             sb.append(p.x);
             sb.append(" ");
@@ -100,7 +99,7 @@ public class ReversiServer implements ReversiObserver, Runnable {
             String response;
             try {
                 response = currentPlayer.receiveMessage();
-            } catch (NoSuchElementException nsee){
+            } catch (NoSuchElementException nsee) {
                 System.out.println(currentColor + " has disconnected. Closing connection with the other player...");
                 sentinel = false;
                 break;
@@ -123,18 +122,18 @@ public class ReversiServer implements ReversiObserver, Runnable {
                                 " " + game.getWhiteScore() + " " + row + " " + col);
 
                         // Do game end condition checking.
-                        if(game.isGameOver()){
+                        if (game.isGameOver()) {
                             String winner = game.getWinner().toLowerCase();
-                            if(winner.contains("black")){
-                                if(currentColor == PieceColor.BLACK){
+                            if (winner.contains("black")) {
+                                if (currentColor == PieceColor.BLACK) {
                                     currentPlayer.sendMessage(ReversiProtocol.GAME_WON);
                                     otherPlayer.sendMessage(ReversiProtocol.GAME_LOST);
                                 } else {
                                     currentPlayer.sendMessage(ReversiProtocol.GAME_LOST);
                                     otherPlayer.sendMessage(ReversiProtocol.GAME_WON);
                                 }
-                            } else if(winner.contains("white")){
-                                if(currentColor == PieceColor.WHITE){
+                            } else if (winner.contains("white")) {
+                                if (currentColor == PieceColor.WHITE) {
                                     currentPlayer.sendMessage(ReversiProtocol.GAME_WON);
                                     otherPlayer.sendMessage(ReversiProtocol.GAME_LOST);
                                 } else {
@@ -269,45 +268,44 @@ public class ReversiServer implements ReversiObserver, Runnable {
             int port = Integer.parseInt(args[0]);
             System.out.println("Starting server on port " + port);
 
+            serverStart(port);
+
+        }
+    }
+
+    /**
+     * Start the server and accept two clients.
+     *
+     * @param port the port to run the server on.
+     */
+    public static void serverStart(int port) {
+
+        try {
+            ServerSocket serverSocket = new ServerSocket(port);
+
+            Duplexer client1 = new Duplexer(serverSocket.accept());
+            System.out.println("Client 1 connected...");
+            client1.sendMessage(ReversiProtocol.WELCOME + " true");
+
+            Duplexer client2 = new Duplexer(serverSocket.accept());
+            System.out.println("Client 2 connected...");
+            client2.sendMessage(ReversiProtocol.WELCOME + " false");
+
+            ReversiServer server = new ReversiServer(client1, client2);
+            System.out.println("Starting game...");
+            Thread t = new Thread(server);
+            t.start();
+
             try {
-                ServerSocket serverSocket = new ServerSocket(port);
-
-                boolean accept = true;
-                Scanner scanner = new Scanner(System.in);
-
-                while (accept) {
-
-                    Duplexer client1 = new Duplexer(serverSocket.accept());
-                    System.out.println("Client 1 connected...");
-                    client1.sendMessage(ReversiProtocol.WELCOME + " true");
-
-                    Duplexer client2 = new Duplexer(serverSocket.accept());
-                    System.out.println("Client 2 connected...");
-                    client2.sendMessage(ReversiProtocol.WELCOME + " false");
-
-                    ReversiServer server = new ReversiServer(client1, client2);
-                    System.out.println("Starting game...");
-                    Thread t = new Thread(server);
-                    t.start();
-
-                    try {
-                        t.join();
-                    } catch (InterruptedException ie) {
-                        ie.printStackTrace();
-                    }
-
-                    System.out.println("Start another game? y/n");
-                    String in = scanner.nextLine();
-                    accept = in.strip().equals("y");
-
-                }
-
-                serverSocket.close();
-
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
+                t.join();
+            } catch (InterruptedException ie) {
+                ie.printStackTrace();
             }
 
+            serverSocket.close();
+
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
         }
     }
 }
