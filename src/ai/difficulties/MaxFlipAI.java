@@ -42,6 +42,11 @@ public class MaxFlipAI extends ReversiAI {
 
         System.out.println("AI: determining move...");
 
+        if(moveSet.size() == 0){
+            System.out.println("AI has no moves available.");
+            return null;
+        }
+
         for(Point p : moveSet){
 
             try {

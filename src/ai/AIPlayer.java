@@ -201,6 +201,12 @@ public class AIPlayer implements ReversiPlayer, Runnable {
                             // Determine AI move here.
                             Point movePoint = ai.determineMove(moveSet);
 
+                            if(movePoint == null){
+                                pass();
+                                tryMove = false;
+                                break;
+                            }
+
                             makeMove(movePoint.x, movePoint.y);
 
                             tryMove = false;
